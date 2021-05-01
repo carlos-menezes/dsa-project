@@ -31,6 +31,7 @@ namespace sector {
      * @return
      */
     Sector create(Supermarket& supermarket);
+    Sector createFromString(std::string *str);
     void addSale(Sector& sector, Sale& sale);
     void addProduct(Sector& sector, Product& product);
     void decreaseDiscountDays(Sector& sector);

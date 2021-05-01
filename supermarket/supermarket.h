@@ -63,8 +63,10 @@ namespace supermarket {
     void updateProductsPrice(Supermarket& supermarket, const std::string& productName, double price);
     void printData(Supermarket& supermarket);
     void startDiscount(Supermarket& supermarket, const std::string& area, unsigned int discount, unsigned int duration);
-    bool isValidArea(Supermarket& supermarket, const std::string& area);
+    bool areaExists(Supermarket& supermarket, const std::string& area);
     bool isValidOwner(Supermarket& supermarket, const std::string& owner);
+    std::string saveState(Supermarket& supermarket);
+    Supermarket loadState(const std::string& path);
 }
 
 #endif //SUPER_EDA_SUPERMARKET_H

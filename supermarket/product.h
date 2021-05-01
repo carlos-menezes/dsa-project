@@ -24,9 +24,11 @@ namespace product {
      * @return
      */
     Product create(Supermarket& supermarket);
+    Product createFromString(std::string* str);
     void setPrice(Product& product, double price);
     void setInDiscount(Product& product, bool inDiscount);
     void printData(Product& product);
+
 }
 
 #endif //SUPER_EDA_PRODUCT_H

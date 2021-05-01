@@ -91,7 +91,7 @@ namespace navigation {
                             return;
                         }
 
-                        if (!supermarket::isValidArea(supermarket, area)) io::output::error("Area not found");
+                        if (!supermarket::areaExists(supermarket, area)) io::output::error("Area not found");
                         else supermarket::startDiscount(supermarket, area, discount, duration);
                     }
             };
@@ -100,7 +100,8 @@ namespace navigation {
             auto saveState = Navigation::Item {
                     "Save state",
                     [&supermarket] {
-                        // TODO
+                        std::string fileName = supermarket::saveState(supermarket);
+                        io::output::info("State saved in file `%s`", fileName.c_str());
                     }
             };
             navigation::addItem(navigation, saveState);
@@ -108,7 +109,15 @@ namespace navigation {
             auto loadState = Navigation::Item {
                     "Load state",
                     [&supermarket] {
-                        // TODO
+                        std::string path;
+                        io::input::getString(path, "Path > ");
+                        std::cout << "Path: " << path << std::endl;
+                        try {
+                            supermarket = supermarket::loadState(path);
+                            io::output::info("Supermarket loaded from file `%s`", path.c_str());
+                        } catch (std::invalid_argument &e) {
+                            io::output::error(e.what());
+                        }
                     }
             };
             navigation::addItem(navigation, loadState);
@@ -158,7 +167,7 @@ namespace navigation {
                     [&supermarket] {
                         std::string area;
                         io::input::getString(area, "Name > ");
-                        if (supermarket::isValidArea(supermarket, area)) io::output::error("Area already exists");
+                        if (supermarket::areaExists(supermarket, area)) io::output::error("Area already exists");
                         else metadata::addArea(supermarket, area);
                     }
             };
@@ -202,7 +211,7 @@ namespace navigation {
 
                         std::string area;
                         io::input::getString(area, "Area name > ");
-                        if (!supermarket::isValidArea(supermarket, area)) io::output::error("Area not found");
+                        if (!metadata::isValidArea(supermarket, area)) io::output::error("Area not found");
                         else {
                             Sector& sector = supermarket.sectors[idAsIndex];
                             sector.area = area;

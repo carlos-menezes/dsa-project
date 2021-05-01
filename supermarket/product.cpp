@@ -35,5 +35,15 @@ void product::setInDiscount(Product &product, bool inDiscount) {
 
 void product::printData(Product &product) {
     if (product.name.empty()) return;
-    printf("NAME: %s | AREA: %s | SUPPLIER: %s | PRICE (€): %.2f\n", product.name.c_str(), product.area.c_str(), product.supplier.c_str(), product.price);
+    printf("NAME: %s | AREA: %s | SUPPLIER: %s | PRICE (€): %.2f | DISCOUNT: %s\n", product.name.c_str(), product.area.c_str(), product.supplier.c_str(), product.price, product.inDiscount ? "YES" : "NO");
+}
+
+Product product::createFromString(std::string *str) {
+    Product product {};
+    product.name = str[0];
+    product.supplier = str[1];
+    product.area = str[2];
+    product.price = std::stof(str[3]);
+    product.inDiscount = std::stoi(str[4]);
+    return product;
 }

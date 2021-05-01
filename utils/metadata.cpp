@@ -44,5 +44,16 @@ namespace metadata {
         metadata.areasAmount++;
         io::output::info("Created new area `%s`", area.c_str());
     }
+
+    bool isValidArea(Supermarket &supermarket, const std::string &area) {
+        bool found = false;
+        for (int i = 0; i < supermarket.metadata.areasAmount; ++i) {
+            if (supermarket.metadata.areas[i] == area) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
 }
 

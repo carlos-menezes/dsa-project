@@ -52,3 +52,18 @@ void sector::printData(Sector& sector) {
     }
 
 }
+
+Sector sector::createFromString(std::string *str) {
+    Sector sector;
+    sector.id = (str->c_str())[0];
+    sector.owner = str[1];
+    sector.area = str[2];
+    sector.capacity = std::stoi(str[3]);
+    sector.productsAmount = std::stoi(str[4]);
+    sector.discountValue = std::stoi(str[5]);
+    sector.discountDuration = std::stoi(str[6]);
+    sector.products = new Product[sector.capacity];
+    sector.sales = new Sale[sale::MAX_SALES];
+    sector.salesAmount = 0;
+    return sector;
+}
