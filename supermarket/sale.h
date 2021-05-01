@@ -1,0 +1,24 @@
+//
+// Created by Carlos on 30/04/2021.
+//
+
+#ifndef SUPER_EDA_SALE_H
+#define SUPER_EDA_SALE_H
+
+#include <string>
+#include "supermarket.h"
+
+struct Sale {
+    std::string productName;
+    double price;
+    char sectorId;
+};
+
+namespace sale {
+    const unsigned int MAX_SALES = 1024;
+
+    Sale create(Sector& sector, Product& product);
+    void printData(Sale& sale);
+}
+
+#endif //SUPER_EDA_SALE_H
