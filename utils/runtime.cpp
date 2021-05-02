@@ -1,17 +1,9 @@
-//
-// Created by Carlos on 01/05/2021.
-//
-
 #include "../supermarket/supermarket.h"
 #include "runtime.h"
 #include "navigation.h"
 #include "io.h"
 
-int runtime::as_new() {
-    auto supermarket = supermarket::create();
-    supermarket::process(supermarket);
-    Navigation managementMenu = navigation::management::buildNavigation(supermarket);
-
+[[noreturn]] void handleRuntime(Supermarket &supermarket, Navigation &managementMenu) {
     char input;
     while (true) {
         navigation::main::getInput(input);
@@ -27,6 +19,25 @@ int runtime::as_new() {
                 break;
         }
     }
+}
 
-    return 0;
+int runtime::asNew() {
+    auto supermarket = supermarket::create();
+    supermarket::process(supermarket);
+    Navigation managementMenu = navigation::management::buildNavigation(supermarket);
+    handleRuntime(supermarket, managementMenu);
+}
+
+int runtime::fromFile(const std::string &path) {
+    Supermarket supermarket{};
+    try {
+        supermarket = supermarket::loadState(path);
+    } catch (std::invalid_argument &e) {
+        io::output::error(e.what());
+        return 1;
+    }
+
+    Navigation managementMenu = navigation::management::buildNavigation(supermarket);
+    supermarket::printData(supermarket);
+    handleRuntime(supermarket, managementMenu);
 }

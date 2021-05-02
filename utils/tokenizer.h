@@ -1,7 +1,3 @@
-//
-// Created by Carlos on 01/05/2021.
-//
-
 #ifndef SUPER_EDA_TOKENIZER_H
 #define SUPER_EDA_TOKENIZER_H
 

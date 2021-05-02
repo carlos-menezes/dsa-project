@@ -1,7 +1,3 @@
-//
-// Created by Carlos on 30/04/2021.
-//
-
 #include "metadata.h"
 #include "files.h"
 #include "io.h"

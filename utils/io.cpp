@@ -1,7 +1,3 @@
-//
-// Created by Carlos on 01/05/2021.
-//
-
 #include "io.h"
 
 namespace io {

@@ -1,12 +1,6 @@
-//
-// Created by Carlos on 30/04/2021.
-//
-
 #include "supermarket.h"
 #include "../utils/random.h"
-#include "product.h"
 #include "../utils/io.h"
-
 
 Product product::create(Supermarket &supermarket) {
     Product product {};
@@ -25,7 +19,7 @@ Product product::create(Supermarket &supermarket) {
 }
 
 void product::setPrice(Product &product, double price) {
-    io::output::info("Product `%s` changed priced from %.2fEUR to %.2fEUR", product.name.c_str(), product.price, price);
+    io::output::info("Product `%s` changed priced from %.0fEUR to %.0fEUR", product.name.c_str(), product.price, price);
     product.price = price;
 }
 
@@ -35,7 +29,8 @@ void product::setInDiscount(Product &product, bool inDiscount) {
 
 void product::printData(Product &product) {
     if (product.name.empty()) return;
-    printf("NAME: %s | AREA: %s | SUPPLIER: %s | PRICE (EUR): %.2f | DISCOUNT: %s\n", product.name.c_str(), product.area.c_str(), product.supplier.c_str(), product.price, product.inDiscount ? "YES" : "NO");
+    printf("NAME: %s | AREA: %s | SUPPLIER: %s | PRICE (EUR): %.0f | DISCOUNT: %s\n", product.name.c_str(),
+           product.area.c_str(), product.supplier.c_str(), product.price, product.inDiscount ? "YES" : "NO");
 }
 
 Product product::createFromString(std::string *str) {

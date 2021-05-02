@@ -1,7 +1,3 @@
-//
-// Created by Carlos on 30/04/2021.
-//
-
 #include <chrono>
 #include <fstream>
 #include "supermarket.h"
@@ -48,7 +44,8 @@ namespace supermarket {
         supermarket.storage[supermarket.storageAmount] = product;
         supermarket.storageAmount++;
         char buffer[1024];
-        snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.2fEUR", product.name.c_str(), product.area.c_str(), product.price);
+        snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.0fEUR", product.name.c_str(),
+                 product.area.c_str(), product.price);
         io::output::custom(io::BOLDMAGENTA, true, "STORAGE", buffer);
     }
     
@@ -232,7 +229,7 @@ namespace supermarket {
         for (int i = 0; i < supermarket.storageAmount; ++i) {
             Product &product = supermarket.storage[i];
             char *product_info = new char[1024];
-            sprintf(product_info, "%s;%s;%s;%.2f;%d|", product.name.c_str(), product.supplier.c_str(),
+            sprintf(product_info, "%s;%s;%s;%.0f;%d|", product.name.c_str(), product.supplier.c_str(),
                     product.area.c_str(), product.price, product.inDiscount);
             fileBuffer.write(product_info, strlen(product_info));
             delete[] product_info;
@@ -251,7 +248,7 @@ namespace supermarket {
             for (int j = 0; j < sector.productsAmount; ++j) {
                 Product &product = sector.products[j];
                 char *product_info = new char[1024];
-                sprintf(product_info, "%s;%s;%s;%.2f;%d|", product.name.c_str(), product.supplier.c_str(),
+                sprintf(product_info, "%s;%s;%s;%.0f;%d|", product.name.c_str(), product.supplier.c_str(),
                         product.area.c_str(), product.price, product.inDiscount);
                 fileBuffer.write(product_info, strlen(product_info));
                 delete[] product_info;

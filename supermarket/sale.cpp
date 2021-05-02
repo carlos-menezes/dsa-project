@@ -1,7 +1,3 @@
-//
-// Created by Carlos on 30/04/2021.
-//
-
 #include "supermarket.h"
 #include "../utils/io.h"
 #include "sale.h"

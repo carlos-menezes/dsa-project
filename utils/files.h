@@ -1,7 +1,3 @@
-//
-// Created by Carlos on 30/04/2021.
-//
-
 #ifndef SUPER_EDA_FILES_H
 #define SUPER_EDA_FILES_H
 

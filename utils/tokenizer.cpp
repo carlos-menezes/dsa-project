@@ -1,6 +1,3 @@
-//
-// Created by Carlos on 01/05/2021.
-//
 #include "tokenizer.h"
 
 namespace tokenizer {

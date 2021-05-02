@@ -1,13 +1,10 @@
-//
-// Created by Carlos on 01/05/2021.
-//
-
 #ifndef SUPER_EDA_RUNTIME_H
 #define SUPER_EDA_RUNTIME_H
 
 namespace runtime {
-    int from_file();
-    int as_new();
+    int fromFile(const std::string &path);
+
+    [[noreturn]] int asNew();
 }
 
 #endif //SUPER_EDA_RUNTIME_H

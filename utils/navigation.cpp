@@ -1,7 +1,6 @@
 #include "navigation.h"
 #include "io.h"
 #include "array.h"
-#include "../supermarket/supermarket.h"
 
 namespace navigation {
     void addItem(Navigation &navigation, Navigation::Item &item) {
