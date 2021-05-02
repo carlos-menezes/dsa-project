@@ -14,7 +14,9 @@ namespace sale {
 
     void printData(Sale &sale) {
         char buffer[1024];
-        snprintf(buffer, sizeof buffer, "PRODUCT: %s | SECTOR: %c", sale.productName.c_str(), sale.sectorId);
+        snprintf(buffer, sizeof buffer, "PRODUCT: %s | SECTOR: %c | PRICE: %.0f", sale.productName.c_str(),
+                 sale.sectorId,
+                 sale.price);
         io::output::custom(io::BOLDGREEN, true, "SALE", buffer);
     }
 
