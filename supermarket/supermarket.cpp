@@ -48,7 +48,7 @@ namespace supermarket {
         supermarket.storage[supermarket.storageAmount] = product;
         supermarket.storageAmount++;
         char buffer[1024];
-        snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.2f€", product.name.c_str(), product.area.c_str(), product.price);
+        snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.2fEUR", product.name.c_str(), product.area.c_str(), product.price);
         io::output::custom(io::BOLDMAGENTA, true, "STORAGE", buffer);
     }
     
@@ -333,7 +333,7 @@ namespace supermarket {
             /**
              * Import each product for the sector
              */
-            for (int j = 1; j < sector.productsAmount; ++j) {
+            for (int j = 1; j < sector.productsAmount + 1; ++j) {
                 /*if (sectorData[j].length() == 0) break;*/
                 auto *productInfo = tokenizer::split(sectorData[j], ';');
                 sector.products[j-1] = product::createFromString(productInfo);

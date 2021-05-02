@@ -25,7 +25,7 @@ Product product::create(Supermarket &supermarket) {
 }
 
 void product::setPrice(Product &product, double price) {
-    io::output::info("Product `%s` changed priced from %.2f€ to %.2f€", product.name.c_str(), product.price, price);
+    io::output::info("Product `%s` changed priced from %.2fEUR to %.2fEUR", product.name.c_str(), product.price, price);
     product.price = price;
 }
 
@@ -35,7 +35,7 @@ void product::setInDiscount(Product &product, bool inDiscount) {
 
 void product::printData(Product &product) {
     if (product.name.empty()) return;
-    printf("NAME: %s | AREA: %s | SUPPLIER: %s | PRICE (€): %.2f | DISCOUNT: %s\n", product.name.c_str(), product.area.c_str(), product.supplier.c_str(), product.price, product.inDiscount ? "YES" : "NO");
+    printf("NAME: %s | AREA: %s | SUPPLIER: %s | PRICE (EUR): %.2f | DISCOUNT: %s\n", product.name.c_str(), product.area.c_str(), product.supplier.c_str(), product.price, product.inDiscount ? "YES" : "NO");
 }
 
 Product product::createFromString(std::string *str) {

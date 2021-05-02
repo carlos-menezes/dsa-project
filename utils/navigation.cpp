@@ -54,7 +54,7 @@ namespace navigation {
                     }
 
                     if (newPrice < 1 || newPrice > 80) {
-                        io::output::error("Invalid price range (1-80€).");
+                        io::output::error("Invalid price range (1-80EUR).");
                         return;
                     }
 
