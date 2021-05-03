@@ -34,8 +34,8 @@ namespace supermarket {
          */
         supermarket.storage = new Product[MAX_STORAGE];
         for (int i = 0; i < 50; ++i) {
-            supermarket.storage[i] = product::create(supermarket);
-            supermarket.storageAmount++;
+            Product product = product::create(supermarket);
+            supermarket::addToStorage(supermarket, product);
         }
     
         return supermarket;
