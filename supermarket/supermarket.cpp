@@ -23,6 +23,7 @@ namespace supermarket {
         unsigned int numSectors = random::i::inRange(8, 12);
         supermarket.sectorsAmount = numSectors;
         supermarket.sectors = new Sector[numSectors];
+        io::output::info("Initializing sectors");
         for (int i = 0; i < numSectors; ++i) {
             supermarket.sectors[i] = sector::create(supermarket);
         }
@@ -31,7 +32,7 @@ namespace supermarket {
          * Initialize the storage.
          * The storage holds products. Initially, 50 products are placed in the storage.
          */
-         supermarket.storage = new Product[MAX_STORAGE];
+        supermarket.storage = new Product[MAX_STORAGE];
         for (int i = 0; i < 50; ++i) {
             supermarket.storage[i] = product::create(supermarket);
             supermarket.storageAmount++;

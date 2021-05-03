@@ -17,16 +17,6 @@ namespace io {
     const std::string BOLDGREEN = "\033[1m\033[32m";
     const std::string BOLDCYAN = "\033[1m\033[36m";
 
-    #define BLACK   "\033[30m"
-    #define RED     "\033[31m"
-    #define GREEN   "\033[32m"
-    #define YELLOW  "\033[33m"
-    #define BLUE    "\033[34m"
-    #define MAGENTA "\033[35m"
-    #define CYAN    "\033[36m"
-    #define BOLDBLACK   "\033[1m\033[30m"
-    #define BOLDWHITE   "\033[1m\033[37m"
-
     namespace output {
         void error(const char* msg, ...);
         void info(const char* msg, ...);

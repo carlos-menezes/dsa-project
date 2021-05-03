@@ -5,13 +5,15 @@
 
 
 Sector sector::create(Supermarket &supermarket) {
-    Sector sector {};
+    Sector sector{};
     static char sectorID = 65;
-    sector.id = sectorID; // TODO: change to `currentChar++`
+    sector.id = sectorID;
     sector.capacity = random::i::inRange(5, 10);
     sector.area = supermarket.metadata.areas[random::i::inRange(0, 15)];
-    sector.owner = sectorID; // TODO: get input
-    sectorID++; // TODO: remove
+    char buffer[1024];
+    snprintf(buffer, sizeof buffer, "Owner for sector %c > ", sector.id);
+    io::input::getString(sector.owner, buffer);
+    sectorID++;
     sector.products = new Product[sector.capacity];
     sector.sales = new Sale[sale::MAX_SALES];
     return sector;
