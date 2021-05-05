@@ -26,6 +26,7 @@ int runtime::asNew() {
     supermarket::process(supermarket);
     Navigation managementMenu = navigation::management::buildNavigation(supermarket);
     handleRuntime(supermarket, managementMenu);
+    return 1;
 }
 
 int runtime::fromFile(const std::string &path) {

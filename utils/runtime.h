@@ -4,7 +4,7 @@
 namespace runtime {
     int fromFile(const std::string &path);
 
-    [[noreturn]] int asNew();
+    int asNew();
 }
 
 #endif //SUPER_EDA_RUNTIME_H
