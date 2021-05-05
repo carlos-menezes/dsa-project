@@ -120,13 +120,10 @@ namespace supermarket {
     }
     
     void updateProductsPrice(Supermarket &supermarket, const std::string &productName, double price) {
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector& sector = supermarket.sectors[i];
-            for (int j = 0; j < sector.productsAmount; ++j) {
-                Product& product = sector.products[j];
-                if (productName == product.name) {
-                    product::setPrice(product, price);
-                }
+        for (int i = 0; i < supermarket.storageAmount; ++i) {
+            Product &product = supermarket.storage[i];
+            if (productName == product.name) {
+                product::setPrice(product, price);
             }
         }
     }
