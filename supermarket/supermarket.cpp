@@ -120,12 +120,16 @@ namespace supermarket {
     }
     
     void updateProductsPrice(Supermarket &supermarket, const std::string &productName, double price) {
+        unsigned int count = 0;
         for (int i = 0; i < supermarket.storageAmount; ++i) {
             Product &product = supermarket.storage[i];
             if (productName == product.name) {
                 product::setPrice(product, price);
+                count++;
             }
         }
+
+        io::output::info("%d products had their price updated", count);
     }
     
     void removeProducts(Supermarket &supermarket, const std::string &productName) {

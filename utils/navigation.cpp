@@ -125,7 +125,7 @@ namespace navigation {
                     "Print products",
                     [&supermarket] {
                         char option;
-                        io::input::getChar(option, "Select an option: (a)lphabetic | (price) > ");
+                        io::input::getChar(option, "Select an option: (a)lphabetic | (p)rice > ");
                         if (option != 'a' && option != 'p') {
                             io::output::error("Invalid input option. Please, try again.");
                             return;
