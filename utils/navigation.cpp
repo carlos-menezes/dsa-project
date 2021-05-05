@@ -177,6 +177,7 @@ namespace navigation {
                     [&supermarket] {
                         std::string owner;
                         io::input::getString(owner, "Owner > ");
+                        int count = 0;
                         if (!supermarket::isValidOwner(supermarket, owner)) io::output::error("Owner not found");
                         else {
                             for (int i = 0; i < supermarket.sectorsAmount; ++i) {
@@ -184,9 +185,13 @@ namespace navigation {
                                 if (sector.owner != owner) continue;
                                 for (int j = 0; j < sector.salesAmount; ++j) {
                                     sale::printData(sector.sales[j]);
+                                    count++;
                                 }
                             }
+                            if (count == 0) io::output::info("Owner `%s` hasn't made any sales", owner.c_str());
+                            else io::output::info("Owner `%s` has made %d sales", owner.c_str(), count);
                         }
+
                     }
             };
             navigation::addItem(navigation, showSales);
