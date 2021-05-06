@@ -5,21 +5,25 @@
 
 namespace metadata {
     Metadata load() {
-        Metadata metadata {};
+        Metadata metadata{};
 
-        metadata.areasAmount = 0;
-        metadata.areas = new std::string [MAX_AREAS];
-        files::getFileLines(AREAS_FILE, metadata.areas, metadata.areasAmount);
+        try {
+            metadata.areasAmount = 0;
+            metadata.areas = new std::string[MAX_AREAS];
+            files::getFileLines(AREAS_FILE, metadata.areas, metadata.areasAmount);
 
-        metadata.namesAmount = 0;
-        metadata.names = new std::string [MAX_NAMES];
-        files::getFileLines(NAMES_FILE, metadata.names, metadata.namesAmount);
+            metadata.namesAmount = 0;
+            metadata.names = new std::string[MAX_NAMES];
+            files::getFileLines(NAMES_FILE, metadata.names, metadata.namesAmount);
 
-        metadata.suppliersAmount = 0;
-        metadata.suppliers = new std::string [MAX_SUPPLIERS];
-        files::getFileLines(SUPPLIERS_FILE, metadata.suppliers, metadata.suppliersAmount);
-
-        return metadata;
+            metadata.suppliersAmount = 0;
+            metadata.suppliers = new std::string[MAX_SUPPLIERS];
+            files::getFileLines(SUPPLIERS_FILE, metadata.suppliers, metadata.suppliersAmount);
+            return metadata;
+        } catch (std::invalid_argument &ex) {
+            io::output::error(ex.what());
+            exit(1);
+        }
     }
 
     bool isValidProduct(Supermarket& supermarket, const std::string &entry) {

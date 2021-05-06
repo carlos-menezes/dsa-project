@@ -5,6 +5,7 @@
 #include "../utils/array.h"
 #include "../utils/io.h"
 #include "../utils/tokenizer.h"
+#include "../utils/files.h"
 
 namespace supermarket {
     
@@ -279,7 +280,9 @@ namespace supermarket {
         std::ifstream fileBuffer(path);
 
         if (!fileBuffer.good()) {
-            throw std::invalid_argument("Could not open file");
+            char buffer[1024];
+            snprintf(buffer, sizeof buffer, "Could not open file `%s`", path.c_str());
+            throw std::invalid_argument(buffer);
         }
 
         Supermarket supermarket {};

@@ -110,7 +110,6 @@ namespace navigation {
                     [&supermarket] {
                         std::string path;
                         io::input::getString(path, "Path > ");
-                        std::cout << "Path: " << path << std::endl;
                         try {
                             supermarket = supermarket::loadState(path);
                             io::output::info("Supermarket loaded from file `%s`", path.c_str());
