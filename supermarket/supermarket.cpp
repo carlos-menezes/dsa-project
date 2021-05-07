@@ -11,6 +11,7 @@ namespace supermarket {
     
     Supermarket supermarket::create() {
         Supermarket supermarket {};
+        supermarket.iterations = 0;
     
         /**
          * Load data from each of the files in the `files` directory into the supermarket.

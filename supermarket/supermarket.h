@@ -19,7 +19,7 @@ struct Supermarket {
     Product* storage;
     unsigned int storageAmount;
 
-    int iterations;
+    unsigned int iterations;
 
     Metadata metadata;
 };
