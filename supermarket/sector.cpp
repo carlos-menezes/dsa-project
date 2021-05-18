@@ -4,18 +4,26 @@
 #include "../utils/io.h"
 
 
-Sector sector::create(Supermarket &supermarket) {
-    Sector sector{};
+Sector *sector::create(Supermarket &supermarket) {
+    auto *sector = new Sector;
     static char sectorID = 65;
-    sector.id = sectorID;
-    sector.capacity = random::i::inRange(5, 10);
-    sector.area = supermarket.metadata.areas[random::i::inRange(0, 15)];
-    char buffer[1024];
-    snprintf(buffer, sizeof buffer, "Owner for sector %c > ", sector.id);
-    io::input::getString(sector.owner, buffer);
+    sector->id = sectorID;
+    sector->capacity = random::i::inRange(5, 11);
+    sector->area = supermarket.metadata.areas[random::i::inRange(0, 11)];
+
+    /*char buffer[1024];
+    snprintf(buffer, sizeof buffer, "Owner for sector %c > ", sector->id);
+    io::input::getString(sector->owner, buffer);*/
+    sector->owner = sectorID;
     sectorID++;
-    sector.products = new Product[sector.capacity];
-    sector.sales = new Sale[sale::MAX_SALES];
+    sector->products = nullptr;
+    sector->productsAmount = 0;
+    sector->sales = nullptr;
+    sector->salesAmount = 0;
+    sector->discountDuration = 0;
+    sector->discountValue = 0;
+
+    sector->next = nullptr;
     return sector;
 }
 
@@ -41,14 +49,17 @@ void sector::setDiscountValue(Sector &sector, unsigned int discountValue) {
     sector.discountValue = discountValue;
 }
 
-void sector::printData(Sector& sector) {
+void sector::printData(Sector *&sector) {
     char headline[1024];
-    snprintf(headline, sizeof headline, "SECTOR: %c | AREA: %s | OWNER: %s | CAPACITY: %d | STOCK: %d", sector.id, sector.area.c_str(), sector.owner.c_str(), sector.capacity, sector.productsAmount);
+    snprintf(headline, sizeof headline, "SECTOR: %c | AREA: %s | OWNER: %s | CAPACITY: %d | STOCK: %d", sector->id,
+             sector->area.c_str(), sector->owner.c_str(), sector->capacity, sector->productsAmount);
     io::output::custom(io::BOLDGREEN, true, headline);
-    for (int i = 0; i < sector.productsAmount; ++i) {
-        product::printData(sector.products[i]);
+    // TODO: implement
+    Product *product = sector->products;
+    while (product != nullptr) {
+        product::printData(product);
+        product = product->next;
     }
-
 }
 
 Sector sector::createFromString(std::string *str) {

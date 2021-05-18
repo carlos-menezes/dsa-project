@@ -2,17 +2,17 @@
 #include <fstream>
 #include "supermarket.h"
 #include "../utils/random.h"
-#include "../utils/array.h"
 #include "../utils/io.h"
 #include "../utils/tokenizer.h"
-#include "../utils/files.h"
+#include "../utils/queue.h"
+#include "../utils/linked_list.h"
 
 namespace supermarket {
-    
+
     Supermarket supermarket::create() {
-        Supermarket supermarket {};
+        Supermarket supermarket{};
         supermarket.iterations = 0;
-    
+
         /**
          * Load data from each of the files in the `files` directory into the supermarket.
          * These values are later retrieved when generating new sectors.
@@ -24,154 +24,131 @@ namespace supermarket {
          */
         unsigned int numSectors = random::i::inRange(8, 12);
         supermarket.sectorsAmount = numSectors;
-        supermarket.sectors = new Sector[numSectors];
+        supermarket.sectors = nullptr;
         io::output::info("Initializing sectors");
         for (int i = 0; i < numSectors; ++i) {
-            supermarket.sectors[i] = sector::create(supermarket);
+            Sector *sector = sector::create(supermarket);
+            linked_list::sectors::insert(supermarket.sectors, sector);
+            delete sector;
         }
-    
+
         /**
          * Initialize the storage.
          * The storage holds products. Initially, 50 products are placed in the storage.
          */
-        supermarket.storage = new Product[MAX_STORAGE];
+        supermarket.storage = nullptr;
         for (int i = 0; i < 50; ++i) {
-            Product product = product::create(supermarket);
-            supermarket::addToStorage(supermarket, product);
+            Product *product = product::create(supermarket);
+            char buffer[1024];
+            snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.0fEUR", product->name.c_str(),
+                     product->area.c_str(), product->price);
+            io::output::custom(io::BOLDMAGENTA, true, "STORAGE ENTRY", buffer);
+            queue::enqueue(supermarket.storage, product);
+            supermarket.storageAmount++;
+            delete product;
         }
-    
+
         return supermarket;
     }
     
-    void addToStorage(Supermarket &supermarket, Product &product) {
-        supermarket.storage[supermarket.storageAmount] = product;
-        supermarket.storageAmount++;
-        char buffer[1024];
-        snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.0fEUR", product.name.c_str(),
-                 product.area.c_str(), product.price);
-        io::output::custom(io::BOLDMAGENTA, true, "STORAGE", buffer);
-    }
-    
     void sellProducts(Supermarket &supermarket) {
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector& sector = supermarket.sectors[i];
-            for (int j = 0; j < sector.productsAmount; ++j) {
-                Product& product = sector.products[j];
-                int chance = random::i::inRange(1, 4);
-                if (chance > 1) continue;
-                auto sale = sale::create(sector, product);
-                sector::addSale(sector, sale);
-                array::shiftLeft(sector.products, sector.productsAmount, j);
-                sector.productsAmount--;
+        Sector *sector = supermarket.sectors;
+        while (sector != nullptr) {
+            Product *product = sector->products;
+            while (product != nullptr) {
+                unsigned int chance = random::i::inRange(1, 4);
+                if (chance > 1) product = product->next;
+                else {
+                    Product *temp = product->next;
+                    // TODO: create sale
+                    char buffer[1024];
+                    snprintf(buffer, sizeof buffer, "PRODUCT: %s | SECTOR: %c | PRICE (EUR): %.0f",
+                             product->name.c_str(),
+                             sector->id,
+                             product->price);
+                    io::output::custom(io::BOLDGREEN, true, "SALE", buffer);
+                    queue::remove(sector->products, product);
+                    sector->productsAmount--;
+                    product = temp;
+                }
             }
+            sector = sector->next;
         }
-
         io::output::divider();
     }
     
     void restockStorage(Supermarket &supermarket) {
         for (int i = 0; i < MAX_STOCK_PER_ITER; ++i) {
-            Product product = product::create(supermarket);
-            supermarket::addToStorage(supermarket, product);
+            Product *product = product::create(supermarket);
+            queue::enqueue(supermarket.storage, product);
+            char buffer[1024];
+            snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.0fEUR", product->name.c_str(),
+                     product->area.c_str(), product->price);
+            io::output::custom(io::BOLDMAGENTA, true, "STORAGE RESTOCK", buffer);
+            supermarket.storageAmount++;
+            delete product;
         }
-    
         io::output::divider();
     }
     
     void restockSectors(Supermarket &supermarket) {
-        unsigned int stockedCount = 0;
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector& sector = supermarket.sectors[i];
-            if (stockedCount == MAX_STOCK_PER_ITER) break;
-            if (sector.productsAmount == sector.capacity) continue;
-            for (int j = 0; j < supermarket.storageAmount; ++j) {
-                Product& product = supermarket.storage[j];
-                if (stockedCount == MAX_STOCK_PER_ITER) break;
-                if (product.area != sector.area) continue;
-                if (sector.productsAmount == sector.capacity) continue;
-                sector::addProduct(sector, product);
-                array::shiftLeft(supermarket.storage, supermarket.storageAmount, j);
-                j--;
-                supermarket.storageAmount--;
-                stockedCount++;
-            }
-        }
-    }
-    
-    void increaseIterations(Supermarket &supermarket) {
-        supermarket.iterations++;
-    }
-    
-    void verifyDiscounts(Supermarket &supermarket) {
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector& sector = supermarket.sectors[i];
-            if (sector.discountDuration > 0) {
-                sector::decreaseDiscountDays(sector);
-                if (sector.discountDuration == 0) {
-                    for (int j = 0; j < sector.productsAmount; ++j) {
-                        Product& product = sector.products[j];
-                        if (!product.inDiscount) continue;
-                        double newPrice = (-100.0*product.price)/(sector.discountValue-100.0);
-                        product::setPrice(product, newPrice);
-                        product::setInDiscount(product, false);
+        unsigned int stockedProducts = 0;
+        Sector *sector = supermarket.sectors;
+        while (sector != nullptr) {
+            if (stockedProducts == MAX_STOCK_PER_ITER) break;
+            else if (sector->productsAmount == sector->capacity) sector = sector->next;
+            else {
+                Product *product = supermarket.storage;
+                while (product != nullptr) {
+                    if (stockedProducts == MAX_STOCK_PER_ITER) break;
+                    else if (sector->productsAmount == sector->capacity) break;
+                    else if (product->area != sector->area) product = product->next;
+                    else {
+                        Product *temp = product->next;
+                        queue::enqueue(sector->products, product);
+                        sector->productsAmount++;
+                        char buffer[1024];
+                        snprintf(buffer, sizeof buffer, "PRODUCT: %s | SUPPLIER: %s | SECTOR: %c | PRICE: %.0fEUR",
+                                 product->name.c_str(), product->supplier.c_str(), sector->id, product->price);
+                        io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
+                        queue::remove(supermarket.storage, product);
+                        supermarket.storageAmount--;
+                        stockedProducts++;
+                        product = temp;
                     }
-                    sector::setDiscountValue(sector, 0);
                 }
             }
+            sector = sector->next;
         }
+    }
+
+    void verifyDiscounts(Supermarket &supermarket) {
+        // TODO: implement
     }
     
     void updateProductsPrice(Supermarket &supermarket, const std::string &productName, double price) {
         unsigned int count = 0;
-        for (int i = 0; i < supermarket.storageAmount; ++i) {
-            Product &product = supermarket.storage[i];
-            if (productName == product.name) {
-                product::setPrice(product, price);
-                count++;
-            }
-        }
-
+        // TODO: implement
         io::output::info("%d products had their price updated", count);
     }
     
     void removeProducts(Supermarket &supermarket, const std::string &productName) {
         int count = 0;
-        for (int i = 0; i < supermarket.storageAmount; ++i) {
-            Product& product = supermarket.storage[i];
-            if (productName == product.name) {
-                count++;
-                io::output::info("Product `%s` removed from storage", product.name.c_str());
-                array::shiftLeft(supermarket.storage, supermarket.storageAmount, i);
-                i--;
-                supermarket.storageAmount--;
-            }
-        }
-    
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector& sector = supermarket.sectors[i];
-            for (int j = 0; j < sector.productsAmount; ++j) {
-                Product &product = sector.products[j];
-                if (productName == product.name) {
-                    count++;
-                    io::output::info("Product `%s` removed from sector `%c`", product.name.c_str(), sector.id);
-                    array::shiftLeft(sector.products, sector.productsAmount, j);
-                    j--;
-                    sector.productsAmount--;
-                }
-            }
-        }
-    
+        // TODO: implement
         io::output::info("Removed %d instances of product `%s`", count, productName.c_str());
     }
     
     void printData(Supermarket &supermarket) {
         io::output::divider();
         char headline[1024];
-        snprintf(headline, sizeof headline, "SUPER EDA | SECTORS: %d | STORAGE STOCK: %d", supermarket.sectorsAmount, supermarket.storageAmount);
+        snprintf(headline, sizeof headline, "SUPER EDA | SECTORS: %d | STORAGE STOCK: %d", supermarket.sectorsAmount,
+                 supermarket.storageAmount);
         io::output::custom(io::BOLDCYAN, true, headline);
         io::output::divider();
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            sector::printData(supermarket.sectors[i]);
+        Sector *sector = supermarket.sectors;
+        while (sector != nullptr) {
+            sector::printData(sector);
+            sector = sector->next;
         }
     }
     
@@ -199,20 +176,7 @@ namespace supermarket {
 
     void
     startDiscount(Supermarket &supermarket, const std::string &area, unsigned int discount, unsigned int duration) {
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector& sector = supermarket.sectors[i];
-            if (area == sector.area) {
-                sector.discountValue = discount;
-                sector.discountDuration = duration;
-                for (int j = 0; j < sector.productsAmount; ++j) {
-                    Product& product = sector.products[j];
-                    double newPrice = product.price - (product.price * (sector.discountValue / 100.0));
-                    product::setPrice(product, newPrice);
-                    product::setInDiscount(product, true);
-                }
-            }
-        }
-
+        // TODO: implement
         io::output::info("Started %d%% discount for %d days in area `%s`", discount, duration, area.c_str());
     }
 
@@ -367,9 +331,13 @@ namespace supermarket {
         supermarket::sellProducts(supermarket);
         supermarket::restockStorage(supermarket);
         supermarket::restockSectors(supermarket);
-        supermarket::increaseIterations(supermarket);
         supermarket::verifyDiscounts(supermarket);
         supermarket::printData(supermarket);
+        Product *product = supermarket.storage;
+        while (product != nullptr) {
+            product::printData(product);
+            product = product->next;
+        }
     }
 }
 

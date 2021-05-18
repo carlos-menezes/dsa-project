@@ -10,6 +10,7 @@ struct Product {
     std::string area;
     double price;
     bool inDiscount;
+    Product *next;
 };
 
 namespace product {
@@ -19,11 +20,14 @@ namespace product {
      * @param supermarket supermarket which the generated product will be tied to
      * @return
      */
-    Product create(Supermarket& supermarket);
-    Product createFromString(std::string* str);
+    Product *create(Supermarket &supermarket);
+
+    Product createFromString(std::string *str);
     void setPrice(Product& product, double price);
-    void setInDiscount(Product& product, bool inDiscount);
-    void printData(Product& product);
+
+    void setInDiscount(Product &product, bool inDiscount);
+
+    void printData(Product *&product);
 
 }
 

@@ -1,6 +1,7 @@
 #include "navigation.h"
 #include "io.h"
-#include "array.h"
+#include "metadata.h"
+#include "../supermarket/supermarket.h"
 
 namespace navigation {
     void addItem(Navigation &navigation, Navigation::Item &item) {
@@ -123,39 +124,7 @@ namespace navigation {
             auto printProducts = Navigation::Item {
                     "Print products",
                     [&supermarket] {
-                        char option;
-                        io::input::getChar(option, "Select an option: (a)lphabetic | (p)rice > ");
-                        if (option != 'a' && option != 'p') {
-                            io::output::error("Invalid input option. Please, try again.");
-                            return;
-                        }
-
-                        // Create a temporary array which holds products both in a) storage and b) each sector
-                        const unsigned int maxProducts = 15 * 12 + supermarket::MAX_STORAGE;
-                        unsigned int count = 0;
-                        auto *products = new Product[maxProducts];
-                        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-                            Sector &sector = supermarket.sectors[i];
-                            for (int j = 0; j < sector.productsAmount; ++j) {
-                                products[count] = sector.products[j];
-                                count++;
-                            }
-                        }
-
-                        for (int i = 0; i < supermarket.storageAmount; ++i) {
-                            products[count] = supermarket.storage[i];
-                            count++;
-                        }
-
-                        if (option == 'a') {
-                            array::sortByName(products, maxProducts);
-                        } else {
-                            array::sortByPrice(products, maxProducts);
-                        }
-
-                        for (int i = 0; i < maxProducts; ++i) {
-                            product::printData(products[i]);
-                        }
+                        // TODO: implement
                     }
             };
             navigation::addItem(navigation, printProducts);
@@ -229,9 +198,7 @@ namespace navigation {
             auto printSectors = Navigation::Item {
                     "Print sectors data",
                     [&supermarket] {
-                        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-                            sector::printData(supermarket.sectors[i]);
-                        }
+                        // TODO: implement
                     }
             };
             navigation::addItem(navigation, printSectors);
@@ -239,9 +206,7 @@ namespace navigation {
             auto printStorage = Navigation::Item {
                     "Print storage data",
                     [&supermarket] {
-                        for (int i = 0; i < supermarket.storageAmount; ++i) {
-                            product::printData(supermarket.storage[i]);
-                        }
+                        // TODO: implement
                     }
             };
             navigation::addItem(navigation, printStorage);

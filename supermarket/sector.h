@@ -10,14 +10,16 @@ struct Sector {
     std::string owner;
     std::string area;
 
-    Product* products;
+    Product *products;
     unsigned int productsAmount;
 
-    Sale* sales;
+    Sale *sales;
     unsigned int salesAmount;
 
     unsigned int discountDuration;
     unsigned int discountValue;
+
+    Sector *next;
 };
 
 namespace sector {
@@ -26,13 +28,16 @@ namespace sector {
      * @param supermarket
      * @return
      */
-    Sector create(Supermarket& supermarket);
+    Sector *create(Supermarket &supermarket);
+
     Sector createFromString(std::string *str);
     void addSale(Sector& sector, Sale& sale);
     void addProduct(Sector& sector, Product& product);
     void decreaseDiscountDays(Sector& sector);
-    void setDiscountValue(Sector& sector, unsigned int discountValue);
-    void printData(Sector& sector);
+
+    void setDiscountValue(Sector &sector, unsigned int discountValue);
+
+    void printData(Sector *&sector);
 }
 
 #endif //SUPER_EDA_SECTOR_H
