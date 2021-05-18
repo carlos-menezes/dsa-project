@@ -23,9 +23,10 @@ namespace product {
     Product *create(Supermarket &supermarket);
 
     Product createFromString(std::string *str);
-    void setPrice(Product& product, double price);
 
-    void setInDiscount(Product &product, bool inDiscount);
+    void setPrice(Product *&product, double price);
+
+    void setInDiscount(Product *&product, bool inDiscount);
 
     void printData(Product *&product);
 

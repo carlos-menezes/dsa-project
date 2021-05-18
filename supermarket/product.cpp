@@ -9,8 +9,7 @@ Product *product::create(Supermarket &supermarket) {
     * Every product is assigned an area. As products must be put into areas somewhen in the future, their areas must
     * be shared with, at least, one sector.
     */
-    unsigned int randSector = random::i::inRange(0, supermarket.sectorsAmount - 1);
-    // TODO: explain
+    unsigned int randSector = random::i::inRange(0, supermarket.sectorsAmount);
     auto *sector = supermarket.sectors;
     while (randSector != 0) {
         sector = sector->next;
@@ -26,13 +25,14 @@ Product *product::create(Supermarket &supermarket) {
     return product;
 }
 
-void product::setPrice(Product &product, double price) {
-    io::output::info("Product `%s` changed priced from %.0fEUR to %.0fEUR", product.name.c_str(), product.price, price);
-    product.price = price;
+void product::setPrice(Product *&product, double price) {
+    io::output::info("Product `%s` changed priced from %.0fEUR to %.0fEUR", product->name.c_str(), product->price,
+                     price);
+    product->price = price;
 }
 
-void product::setInDiscount(Product &product, bool inDiscount) {
-    product.inDiscount = inDiscount;
+void product::setInDiscount(Product *&product, bool inDiscount) {
+    product->inDiscount = inDiscount;
 }
 
 void product::printData(Product *&product) {

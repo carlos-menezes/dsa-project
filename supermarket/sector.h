@@ -31,11 +31,14 @@ namespace sector {
     Sector *create(Supermarket &supermarket);
 
     Sector createFromString(std::string *str);
-    void addSale(Sector& sector, Sale& sale);
-    void addProduct(Sector& sector, Product& product);
-    void decreaseDiscountDays(Sector& sector);
 
-    void setDiscountValue(Sector &sector, unsigned int discountValue);
+    void setDiscountDays(Sector *&sector, unsigned int value);
+
+    void addSale(Sector &sector, Sale &sale);
+
+    void addProduct(Sector &sector, Product &product);
+
+    void setDiscountValue(Sector *&sector, unsigned int discountValue);
 
     void printData(Sector *&sector);
 }

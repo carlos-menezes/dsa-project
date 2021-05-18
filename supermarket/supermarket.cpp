@@ -82,7 +82,7 @@ namespace supermarket {
             Product *product = product::create(supermarket);
             queue::enqueue(supermarket.storage, product);
             char buffer[1024];
-            snprintf(buffer, sizeof buffer, "NAME: %s | AREA: %s | PRICE: %.0fEUR", product->name.c_str(),
+            snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | PRICE: %.0fEUR", product->name.c_str(),
                      product->area.c_str(), product->price);
             io::output::custom(io::BOLDMAGENTA, true, "STORAGE RESTOCK", buffer);
             supermarket.storageAmount++;
@@ -90,45 +90,67 @@ namespace supermarket {
         }
         io::output::divider();
     }
-    
+
     void restockSectors(Supermarket &supermarket) {
         unsigned int stockedProducts = 0;
+        Product *product = supermarket.storage;
+        while (product != nullptr) {
+            if (stockedProducts == MAX_STOCK_PER_ITER) break;
+            Product *temp = product->next;
+            Sector *sector = supermarket.sectors;
+            while (sector != nullptr) {
+                if (stockedProducts == MAX_STOCK_PER_ITER) break;
+                else if (sector->productsAmount == sector->capacity) sector = sector->next;
+                else if (sector->area != product->area) sector = sector->next;
+                else {
+                    char buffer[1024];
+                    snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | SECTOR: %c | PRICE: %.0fEUR",
+                             product->name.c_str(), product->area.c_str(), sector->id, product->price);
+                    io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
+
+                    queue::enqueue(sector->products, product);
+                    queue::remove(supermarket.storage, product);
+                    sector->productsAmount++;
+                    supermarket.storageAmount--;
+                    stockedProducts++;
+                    break;
+                }
+            }
+            product = temp;
+        }
+    }
+
+    void verifyDiscounts(Supermarket &supermarket) {
         Sector *sector = supermarket.sectors;
         while (sector != nullptr) {
-            if (stockedProducts == MAX_STOCK_PER_ITER) break;
-            else if (sector->productsAmount == sector->capacity) sector = sector->next;
-            else {
-                Product *product = supermarket.storage;
-                while (product != nullptr) {
-                    if (stockedProducts == MAX_STOCK_PER_ITER) break;
-                    else if (sector->productsAmount == sector->capacity) break;
-                    else if (product->area != sector->area) product = product->next;
-                    else {
-                        Product *temp = product->next;
-                        queue::enqueue(sector->products, product);
-                        sector->productsAmount++;
-                        char buffer[1024];
-                        snprintf(buffer, sizeof buffer, "PRODUCT: %s | SUPPLIER: %s | SECTOR: %c | PRICE: %.0fEUR",
-                                 product->name.c_str(), product->supplier.c_str(), sector->id, product->price);
-                        io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
-                        queue::remove(supermarket.storage, product);
-                        supermarket.storageAmount--;
-                        stockedProducts++;
-                        product = temp;
+            if (sector->discountDuration > 0) {
+                sector::setDiscountDays(sector, sector->discountDuration - 1);
+                if (sector->discountDuration == 0) {
+                    Product *product = sector->products;
+                    while (product != nullptr) {
+                        if (product->inDiscount) {
+                            double originalPrice = (-100.0 * product->price) / (sector->discountValue - 100.0);
+                            product::setPrice(product, originalPrice);
+                            product::setInDiscount(product, false);
+                        }
+                        product = product->next;
                     }
                 }
             }
             sector = sector->next;
         }
     }
-
-    void verifyDiscounts(Supermarket &supermarket) {
-        // TODO: implement
-    }
     
     void updateProductsPrice(Supermarket &supermarket, const std::string &productName, double price) {
         unsigned int count = 0;
-        // TODO: implement
+        Product *product = supermarket.storage;
+        while (product != nullptr) {
+            if (product->name == productName) {
+                product::setPrice(product, price);
+                count++;
+            }
+            product = product->next;
+        }
         io::output::info("%d products had their price updated", count);
     }
     
@@ -154,29 +176,48 @@ namespace supermarket {
     
     bool areaExists(Supermarket &supermarket, const std::string &area) {
         bool found = false;
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            if (supermarket.sectors[i].area == area) {
+        Sector *sector = supermarket.sectors;
+        while (sector != nullptr) {
+            if (sector->area == area) {
                 found = true;
                 break;
             }
+            sector = sector->next;
         }
         return found;
     }
 
     bool isValidOwner(Supermarket &supermarket, const std::string &owner) {
         bool found = false;
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            if (supermarket.sectors[i].owner == owner) {
+        Sector *sector = supermarket.sectors;
+        while (sector != nullptr) {
+            if (sector->owner == owner) {
                 found = true;
                 break;
             }
+            sector = sector->next;
         }
         return found;
     }
 
     void
     startDiscount(Supermarket &supermarket, const std::string &area, unsigned int discount, unsigned int duration) {
-        // TODO: implement
+        Sector *sector = supermarket.sectors;
+        while (sector != nullptr) {
+            if (sector->area != area) sector = sector->next;
+            else {
+                sector->discountValue = discount;
+                sector->discountDuration = duration;
+                Product *product = sector->products;
+                while (product != nullptr) {
+                    double newPrice = product->price - (product->price * (sector->discountValue / 100.0));
+                    product::setPrice(product, newPrice);
+                    product::setInDiscount(product, true);
+                    product = product->next;
+                }
+                sector = sector->next;
+            }
+        }
         io::output::info("Started %d%% discount for %d days in area `%s`", discount, duration, area.c_str());
     }
 
@@ -333,11 +374,6 @@ namespace supermarket {
         supermarket::restockSectors(supermarket);
         supermarket::verifyDiscounts(supermarket);
         supermarket::printData(supermarket);
-        Product *product = supermarket.storage;
-        while (product != nullptr) {
-            product::printData(product);
-            product = product->next;
-        }
     }
 }
 

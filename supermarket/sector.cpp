@@ -41,12 +41,12 @@ void sector::addProduct(Sector &sector, Product &product) {
     io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
 }
 
-void sector::decreaseDiscountDays(Sector &sector) {
-    sector.discountDuration--;
+void sector::setDiscountDays(Sector *&sector, unsigned int value) {
+    sector->discountDuration = value;
 }
 
-void sector::setDiscountValue(Sector &sector, unsigned int discountValue) {
-    sector.discountValue = discountValue;
+void sector::setDiscountValue(Sector *&sector, unsigned int discountValue) {
+    sector->discountValue = discountValue;
 }
 
 void sector::printData(Sector *&sector) {

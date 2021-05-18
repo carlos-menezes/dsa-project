@@ -206,7 +206,11 @@ namespace navigation {
             auto printStorage = Navigation::Item {
                     "Print storage data",
                     [&supermarket] {
-                        // TODO: implement
+                        Product *product = supermarket.storage;
+                        while (product != nullptr) {
+                            product::printData(product);
+                            product = product->next;
+                        }
                     }
             };
             navigation::addItem(navigation, printStorage);
