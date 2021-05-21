@@ -1,7 +1,3 @@
-//
-// Created by Carlos on 18/05/2021.
-//
-
 #include "linked_list.h"
 
 namespace linked_list {

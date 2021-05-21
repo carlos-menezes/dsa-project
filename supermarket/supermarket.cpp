@@ -6,6 +6,7 @@
 #include "../utils/tokenizer.h"
 #include "../utils/queue.h"
 #include "../utils/linked_list.h"
+#include "../utils/binary_tree.h"
 
 namespace supermarket {
 
@@ -60,15 +61,12 @@ namespace supermarket {
                 if (chance > 1) product = product->next;
                 else {
                     Product *temp = product->next;
-                    // TODO: create sale
-                    char buffer[1024];
-                    snprintf(buffer, sizeof buffer, "PRODUCT: %s | SECTOR: %c | PRICE (EUR): %.0f",
-                             product->name.c_str(),
-                             sector->id,
-                             product->price);
-                    io::output::custom(io::BOLDGREEN, true, "SALE", buffer);
+                    Sale *sale = sale::create(sector, product);
+                    binary_tree::insert(sector->sales, sale);
+                    sale::printData(sale);
                     queue::remove(sector->products, product);
                     sector->productsAmount--;
+                    sector->salesAmount++;
                     product = temp;
                 }
             }
@@ -124,7 +122,7 @@ namespace supermarket {
         Sector *sector = supermarket.sectors;
         while (sector != nullptr) {
             if (sector->discountDuration > 0) {
-                sector::setDiscountDays(sector, sector->discountDuration - 1);
+                sector->discountDuration--;
                 if (sector->discountDuration == 0) {
                     Product *product = sector->products;
                     while (product != nullptr) {
@@ -156,7 +154,35 @@ namespace supermarket {
     
     void removeProducts(Supermarket &supermarket, const std::string &productName) {
         int count = 0;
-        // TODO: implement
+        // Remove products from storage
+        Product *storageProduct = supermarket.storage;
+        while (storageProduct != nullptr) {
+            Product *temp = storageProduct->next;
+            if (storageProduct->name == productName) {
+                count++;
+                io::output::info("Product `%s` removed from storage", storageProduct->name.c_str());
+                queue::remove(supermarket.storage, storageProduct);
+            }
+            storageProduct = temp;
+        }
+        delete storageProduct;
+
+        // Remove products from sectors
+        Sector *sector = supermarket.sectors;
+        while (sector != nullptr) {
+            Product *sectorProduct = sector->products;
+            while (sectorProduct != nullptr) {
+                Product *temp = sectorProduct->next;
+                if (sectorProduct->name == productName) {
+                    count++;
+                    io::output::info("Product `%s` removed from sector `%c`", sectorProduct->name.c_str(), sector->id);
+                    queue::remove(sector->products, sectorProduct);
+                }
+                sectorProduct = temp;
+            }
+            sector = sector->next;
+        }
+
         io::output::info("Removed %d instances of product `%s`", count, productName.c_str());
     }
     
@@ -342,7 +368,6 @@ namespace supermarket {
              * Import each product for the sector
              */
             for (int j = 1; j < sector.productsAmount + 1; ++j) {
-                /*if (sectorData[j].length() == 0) break;*/
                 auto *productInfo = tokenizer::split(sectorData[j], ';');
                 sector.products[j-1] = product::createFromString(productInfo);
             }

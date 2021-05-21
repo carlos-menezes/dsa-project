@@ -32,15 +32,7 @@ namespace sector {
 
     Sector createFromString(std::string *str);
 
-    void setDiscountDays(Sector *&sector, unsigned int value);
-
-    void addSale(Sector &sector, Sale &sale);
-
-    void addProduct(Sector &sector, Product &product);
-
-    void setDiscountValue(Sector *&sector, unsigned int discountValue);
-
-    void printData(Sector *&sector);
+    void printData(Sector *sector);
 }
 
 #endif //SUPER_EDA_SECTOR_H

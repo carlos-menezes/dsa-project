@@ -32,7 +32,7 @@ namespace navigation {
     void addItem(Navigation &navigation, Navigation::Item& item);
 
     namespace management {
-        const unsigned int MAX_MANAGEMENT_ITEMS = 11;
+        const unsigned int MAX_MANAGEMENT_ITEMS = 10;
 
         /**
          * Gets input for processing action on the management menu.

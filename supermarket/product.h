@@ -28,7 +28,7 @@ namespace product {
 
     void setInDiscount(Product *&product, bool inDiscount);
 
-    void printData(Product *&product);
+    void printData(Product *product);
 
 }
 

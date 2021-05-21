@@ -35,7 +35,7 @@ void product::setInDiscount(Product *&product, bool inDiscount) {
     product->inDiscount = inDiscount;
 }
 
-void product::printData(Product *&product) {
+void product::printData(Product *product) {
     printf("NAME: %s | AREA: %s | SUPPLIER: %s | PRICE (EUR): %.0f | DISCOUNT: %s\n", product->name.c_str(),
            product->area.c_str(), product->supplier.c_str(), product->price, product->inDiscount ? "YES" : "NO");
 }

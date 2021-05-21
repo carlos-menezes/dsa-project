@@ -27,34 +27,11 @@ Sector *sector::create(Supermarket &supermarket) {
     return sector;
 }
 
-void sector::addSale(Sector &sector, Sale &sale) {
-    sector.sales[sector.salesAmount] = sale;
-    sector.salesAmount++;
-    sale::printData(sale);
-}
-
-void sector::addProduct(Sector &sector, Product &product) {
-    sector.products[sector.productsAmount] = product;
-    sector.productsAmount++;
-    char buffer[1024];
-    snprintf(buffer, sizeof buffer, "PRODUCT: %s | SECTOR: %c", product.name.c_str(), sector.id);
-    io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
-}
-
-void sector::setDiscountDays(Sector *&sector, unsigned int value) {
-    sector->discountDuration = value;
-}
-
-void sector::setDiscountValue(Sector *&sector, unsigned int discountValue) {
-    sector->discountValue = discountValue;
-}
-
-void sector::printData(Sector *&sector) {
+void sector::printData(Sector *sector) {
     char headline[1024];
     snprintf(headline, sizeof headline, "SECTOR: %c | AREA: %s | OWNER: %s | CAPACITY: %d | STOCK: %d", sector->id,
              sector->area.c_str(), sector->owner.c_str(), sector->capacity, sector->productsAmount);
     io::output::custom(io::BOLDGREEN, true, headline);
-    // TODO: implement
     Product *product = sector->products;
     while (product != nullptr) {
         product::printData(product);

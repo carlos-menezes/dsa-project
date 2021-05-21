@@ -1,6 +1,7 @@
 #include "navigation.h"
 #include "io.h"
 #include "metadata.h"
+#include "binary_tree.h"
 #include "../supermarket/supermarket.h"
 
 namespace navigation {
@@ -124,7 +125,23 @@ namespace navigation {
             auto printProducts = Navigation::Item {
                     "Print products",
                     [&supermarket] {
-                        // TODO: implement
+                        // Print storage
+                        Product *storageProduct = supermarket.storage;
+                        while (storageProduct != nullptr) {
+                            product::printData(storageProduct);
+                            storageProduct = storageProduct->next;
+                        }
+
+                        // Print sector products
+                        Sector *sector = supermarket.sectors;
+                        while (sector != nullptr) {
+                            Product *sectorProduct = sector->products;
+                            while (sectorProduct != nullptr) {
+                                product::printData(sectorProduct);
+                                sectorProduct = sectorProduct->next;
+                            }
+                            sector = sector->next;
+                        }
                     }
             };
             navigation::addItem(navigation, printProducts);
@@ -148,13 +165,13 @@ namespace navigation {
                         int count = 0;
                         if (!supermarket::isValidOwner(supermarket, owner)) io::output::error("Owner not found");
                         else {
-                            for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-                                Sector &sector = supermarket.sectors[i];
-                                if (sector.owner != owner) continue;
-                                for (int j = 0; j < sector.salesAmount; ++j) {
-                                    sale::printData(sector.sales[j]);
-                                    count++;
+                            Sector *sector = supermarket.sectors;
+                            while (sector != nullptr) {
+                                if (sector->owner == owner) {
+                                    count += sector->salesAmount;
+                                    binary_tree::traverse(sector->sales);
                                 }
+                                sector = sector->next;
                             }
                             if (count == 0) io::output::info("Owner `%s` hasn't made any sales", owner.c_str());
                             else io::output::info("Owner `%s` has made %d sales", owner.c_str(), count);
@@ -164,41 +181,14 @@ namespace navigation {
             };
             navigation::addItem(navigation, showSales);
 
-            auto changeArea = Navigation::Item {
-                    "Change area",
-                    [&supermarket]() {
-                        char id;
-                        io::input::getChar(id, "Sector ID > ");
-                        /**
-                         * Sectors ID start at char 65, 'A'.
-                         * Subtracting an integer from a character returns a new integer.
-                         * If ID 'A' is inserted, idAsIndex = 65 - 65 = 0, thus we can access the first element of the
-                         * sectors array which has ID A.
-                         */
-                        int idAsIndex = id - 65;
-                        if (idAsIndex < 0 || idAsIndex > supermarket.sectorsAmount) {
-                            io::output::error("Invalid sector `%c`", id);
-                            return;
-                        }
-
-                        std::string area;
-                        io::input::getString(area, "Area name > ");
-                        if (!metadata::isValidArea(supermarket, area)) io::output::error("Area not found");
-                        else {
-                            Sector& sector = supermarket.sectors[idAsIndex];
-                            sector.area = area;
-                            sector.productsAmount = 0;
-                            sector.products = new Product[sector.capacity];
-                            io::output::info("Sector `%c` emptied and changed area to `%s`", sector.id, area.c_str());
-                        }
-                    }
-            };
-            navigation::addItem(navigation, changeArea);
-
             auto printSectors = Navigation::Item {
                     "Print sectors data",
                     [&supermarket] {
-                        // TODO: implement
+                        Sector *sector = supermarket.sectors;
+                        while (sector != nullptr) {
+                            sector::printData(sector);
+                            sector = sector->next;
+                        }
                     }
             };
             navigation::addItem(navigation, printSectors);
