@@ -40,12 +40,13 @@ void product::printData(Product *product) {
            product->area.c_str(), product->supplier.c_str(), product->price, product->inDiscount ? "YES" : "NO");
 }
 
-Product product::createFromString(std::string *str) {
-    Product product {};
-    product.name = str[0];
-    product.supplier = str[1];
-    product.area = str[2];
-    product.price = std::stof(str[3]);
-    product.inDiscount = std::stoi(str[4]);
+Product * product::createFromString(std::string *str) {
+    Product* product = new Product;
+    product->name = str[0];
+    product->supplier = str[1];
+    product->area = str[2];
+    product->price = std::stof(str[3]);
+    product->inDiscount = std::stoi(str[4]);
+    product->next = nullptr;
     return product;
 }

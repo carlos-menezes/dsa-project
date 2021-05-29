@@ -28,9 +28,9 @@ namespace sector {
      * @param supermarket
      * @return
      */
-    Sector *create(Supermarket &supermarket);
+    Sector* create(Supermarket &supermarket);
 
-    Sector createFromString(std::string *str);
+    Sector* createFromString(std::string *str);
 
     void printData(Sector *sector);
 }

@@ -20,11 +20,13 @@ namespace sale {
         io::output::custom(io::BOLDGREEN, true, "SALE", buffer);
     }
 
-    Sale createFromString(std::string *str) {
-        Sale s;
-        s.sectorId = (str->c_str())[0];
-        s.productName = str[1];
-        s.price = std::stod(str[2]);
-        return s;
+    Sale* createFromString(std::string *str) {
+        Sale* sale = new Sale;
+        sale->sectorId = (str->c_str())[0];
+        sale->productName = str[1];
+        sale->price = std::stod(str[2]);
+        sale->left = nullptr;
+        sale->right = nullptr;
+        return sale;
     }
 }

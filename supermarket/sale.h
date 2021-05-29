@@ -17,7 +17,7 @@ namespace sale {
 
     Sale *create(Sector *&sector, Product *&product);
 
-    Sale createFromString(std::string *str);
+    Sale * createFromString(std::string *str);
 
     void printData(Sale *&sale);
 }

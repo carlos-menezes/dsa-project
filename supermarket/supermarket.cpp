@@ -97,8 +97,7 @@ namespace supermarket {
             Product *temp = product->next;
             Sector *sector = supermarket.sectors;
             while (sector != nullptr) {
-                if (stockedProducts == MAX_STOCK_PER_ITER) break;
-                else if (sector->productsAmount == sector->capacity) sector = sector->next;
+                if (sector->productsAmount == sector->capacity) sector = sector->next;
                 else if (sector->area != product->area) sector = sector->next;
                 else {
                     char buffer[1024];
@@ -261,30 +260,27 @@ namespace supermarket {
         fileBuffer.write(supermarketInfo, strlen(supermarketInfo));
         delete[] supermarketInfo;
 
-        for (int i = 0; i < supermarket.storageAmount; ++i) {
-            Product &product = supermarket.storage[i];
+        for (Product* product = supermarket.storage; product != nullptr ; product = product->next){
             char *product_info = new char[1024];
-            sprintf(product_info, "%s;%s;%s;%.0f;%d|", product.name.c_str(), product.supplier.c_str(),
-                    product.area.c_str(), product.price, product.inDiscount);
+            sprintf(product_info, "%s;%s;%s;%.0f;%d|", product->name.c_str(), product->supplier.c_str(),
+                    product->area.c_str(), product->price, product->inDiscount);
             fileBuffer.write(product_info, strlen(product_info));
             delete[] product_info;
         }
 
         fileBuffer.write(lineBreak, strlen(lineBreak));
 
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector &sector = supermarket.sectors[i];
+        for (Sector* sector = supermarket.sectors; sector != nullptr ; sector = sector->next) {
             char *sector_info = new char[1024];
-            sprintf(sector_info, "%c;%s;%s;%d;%u;%u;%u|", sector.id, sector.owner.c_str(), sector.area.c_str(),
-                    sector.capacity, sector.productsAmount, sector.discountValue, sector.discountDuration);
+            sprintf(sector_info, "%c;%s;%s;%d;%u;%u;%u|", sector->id, sector->owner.c_str(), sector->area.c_str(),
+                    sector->capacity, sector->productsAmount, sector->discountValue, sector->discountDuration);
             fileBuffer.write(sector_info, strlen(sector_info));
             delete[] sector_info;
 
-            for (int j = 0; j < sector.productsAmount; ++j) {
-                Product &product = sector.products[j];
+            for (Product* product = sector->products; product != nullptr ; product = product->next){
                 char *product_info = new char[1024];
-                sprintf(product_info, "%s;%s;%s;%.0f;%d|", product.name.c_str(), product.supplier.c_str(),
-                        product.area.c_str(), product.price, product.inDiscount);
+                sprintf(product_info, "%s;%s;%s;%.0f;%d|", product->name.c_str(), product->supplier.c_str(),
+                        product->area.c_str(), product->price, product->inDiscount);
                 fileBuffer.write(product_info, strlen(product_info));
                 delete[] product_info;
             }
@@ -292,15 +288,8 @@ namespace supermarket {
             fileBuffer.write(lineBreak, strlen(lineBreak));
         }
 
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
-            Sector &sector = supermarket.sectors[i];
-            for (int j = 0; j < sector.salesAmount; ++j) {
-                Sale &sale = sector.sales[j];
-                char *sale_info = new char[1024];
-                sprintf(sale_info, "%c;%s;%f|", sale.sectorId, sale.productName.c_str(), sale.price);
-                fileBuffer.write(sale_info, strlen(sale_info));
-                delete[] sale_info;
-            }
+        for (Sector* sector = supermarket.sectors; sector != nullptr ; sector = sector->next) {
+            binary_tree::write(sector->sales, fileBuffer);
         }
 
         fileBuffer.close();
@@ -319,7 +308,7 @@ namespace supermarket {
 
         Supermarket supermarket {};
         supermarket.metadata = metadata::load();
-        supermarket.storage = new Product[MAX_STORAGE];
+        supermarket.storage = nullptr;
         supermarket.storageAmount = 0;
 
         /**
@@ -330,7 +319,7 @@ namespace supermarket {
         std::getline(fileBuffer, supermarketInfo);
         auto *supermarketData = tokenizer::split(supermarketInfo, ';');
         supermarket.sectorsAmount = std::stoi(supermarketData[0]);
-        supermarket.sectors = new Sector[supermarket.sectorsAmount];
+        supermarket.sectors = nullptr;
         delete[] supermarketData;
 
         /**
@@ -342,7 +331,8 @@ namespace supermarket {
         for (int i = 0; i < tokenizer::MAX_ITEMS; ++i) {
             if (storageData[i].length() == 0) break;
             auto *productInfo = tokenizer::split(storageData[i], ';');
-            supermarket.storage[i] = product::createFromString(productInfo);
+            Product* product = product::createFromString(productInfo);
+            queue::enqueue(supermarket.storage, product);
             delete[] productInfo;
             supermarket.storageAmount++;
         }
@@ -360,23 +350,24 @@ namespace supermarket {
              * Initialize each sector
              */
             auto *metadata = tokenizer::split(sectorData[0], ';');
-            Sector &sector = supermarket.sectors[i];
-            sector = sector::createFromString(metadata);
-            delete[] metadata;
+            Sector* sector = sector::createFromString(metadata);
 
             /**
              * Import each product for the sector
              */
-            for (int j = 1; j < sector.productsAmount + 1; ++j) {
+            for (int j = 1; j < sector->productsAmount + 1; ++j) {
                 auto *productInfo = tokenizer::split(sectorData[j], ';');
-                sector.products[j-1] = product::createFromString(productInfo);
+                Product* product = product::createFromString(productInfo);
+                queue::enqueue(sector->products, product);
             }
+            linked_list::sectors::insert(supermarket.sectors, sector);
+            delete[] metadata;
         }
 
         /**
          * Lastly, load sales
          */
-        std::string salesInfo;
+        /*std::string salesInfo;
         std::getline(fileBuffer, salesInfo);
         auto *salesData = tokenizer::split(salesInfo, '|');
         for (int i = 0; i < tokenizer::MAX_ITEMS; ++i) {
@@ -388,10 +379,11 @@ namespace supermarket {
             sector.salesAmount++;
             delete[] saleInfo;
         }
-        delete[] salesData;
+        delete[] salesData;*/
 
         return supermarket;
     }
+
 
     void process(Supermarket &supermarket) {
         supermarket::sellProducts(supermarket);

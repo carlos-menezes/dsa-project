@@ -22,7 +22,7 @@ namespace product {
      */
     Product *create(Supermarket &supermarket);
 
-    Product createFromString(std::string *str);
+    Product * createFromString(std::string *str);
 
     void setPrice(Product *&product, double price);
 

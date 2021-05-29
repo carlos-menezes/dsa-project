@@ -30,24 +30,4 @@ namespace queue {
             delete element;
         }
     }
-
-    /*void dequeue(Product *&queue) {
-        if (queue == nullptr) return;
-        if (queue->next == nullptr) {
-            queue = nullptr;
-        } else {
-            Product *temp = queue->next;
-            delete queue;
-            queue = temp;
-        }
-    }*/
-
-    /*unsigned int length(Product *&queue) {
-        const Product *aux = queue;
-        unsigned int count = 0;
-        while (aux->next != nullptr) {
-            count++;
-        }
-        return count;
-    }*/
 }

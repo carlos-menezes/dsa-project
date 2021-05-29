@@ -5,8 +5,8 @@
 
 namespace binary_tree {
     void insert(Sale *&tree, Sale *&sale);
-
     void traverse(Sale *&tree);
+    void write(Sale *&tree, std::ofstream &out);
 }
 
 #endif //SUPER_EDA_BINARY_TREE_H

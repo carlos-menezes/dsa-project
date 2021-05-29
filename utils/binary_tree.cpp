@@ -1,3 +1,4 @@
+#include <fstream>
 #include "binary_tree.h"
 #include "../supermarket/sale.h"
 
@@ -16,5 +17,17 @@ namespace binary_tree {
         traverse(tree->left);
         sale::printData(tree);
         traverse(tree->right);
+    }
+
+    void write(Sale *&tree, std::ofstream &out) {
+        if (!tree) return;
+
+        char *saleInfo = new char[1024];
+        sprintf(saleInfo, "%c;%s;%f|", tree->sectorId, tree->productName.c_str(), tree->price);
+        out.write(saleInfo, strlen(saleInfo));
+        delete[] saleInfo;
+
+        write(tree->left, out);
+        write(tree->right, out);
     }
 }
