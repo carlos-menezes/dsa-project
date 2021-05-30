@@ -19,6 +19,9 @@ namespace metadata {
             metadata.suppliersAmount = 0;
             metadata.suppliers = new std::string[MAX_SUPPLIERS];
             files::getFileLines(SUPPLIERS_FILE, metadata.suppliers, metadata.suppliersAmount);
+
+            metadata.runtimeAreasAmount = 0;
+            metadata.runtimeAreas = new std::string[MAX_AREAS];
             return metadata;
         } catch (std::invalid_argument &ex) {
             io::output::error(ex.what());
@@ -38,22 +41,11 @@ namespace metadata {
         return found;
     }
 
-    void addArea(Supermarket &supermarket, const std::string &area) {
-        Metadata& metadata = supermarket.metadata;
-        metadata.areas[metadata.areasAmount] = area;
-        metadata.areasAmount++;
+    void addRuntimeArea(Supermarket &supermarket, const std::string &area) {
+        Metadata &metadata = supermarket.metadata;
+        metadata.runtimeAreas[metadata.runtimeAreasAmount] = area;
+        metadata.runtimeAreasAmount++;
         io::output::info("Created new area `%s`", area.c_str());
-    }
-
-    bool isValidArea(Supermarket &supermarket, const std::string &area) {
-        bool found = false;
-        for (int i = 0; i < supermarket.metadata.areasAmount; ++i) {
-            if (supermarket.metadata.areas[i] == area) {
-                found = true;
-                break;
-            }
-        }
-        return found;
     }
 }
 

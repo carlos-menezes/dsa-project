@@ -92,7 +92,7 @@ namespace navigation {
                             return;
                         }
 
-                        if (!supermarket::areaExists(supermarket, area)) io::output::error("Area not found");
+                        if (!supermarket::isAreaInSectors(supermarket, area)) io::output::error("Area not found");
                         else supermarket::startDiscount(supermarket, area, discount, duration);
                     }
             };
@@ -151,8 +151,8 @@ namespace navigation {
                     [&supermarket] {
                         std::string area;
                         io::input::getString(area, "Name > ");
-                        if (supermarket::areaExists(supermarket, area)) io::output::error("Area already exists");
-                        else metadata::addArea(supermarket, area);
+                        if (supermarket::isAreaInSectors(supermarket, area)) io::output::error("Area already exists");
+                        else metadata::addRuntimeArea(supermarket, area);
                     }
             };
             navigation::addItem(navigation, createArea);

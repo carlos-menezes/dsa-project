@@ -9,19 +9,30 @@ Product *product::create(Supermarket &supermarket) {
     * Every product is assigned an area. As products must be put into areas somewhen in the future, their areas must
     * be shared with, at least, one sector.
     */
-    unsigned int randSector = random::i::inRange(0, supermarket.sectorsAmount);
-    auto *sector = supermarket.sectors;
-    while (randSector != 0) {
-        sector = sector->next;
-        randSector--;
-    }
-    product->area = sector->area;
     unsigned int randName = random::i::inRange(0, supermarket.metadata.namesAmount - 1);
     product->name = supermarket.metadata.names[randName];
     unsigned int randSupplier = random::i::inRange(0, supermarket.metadata.suppliersAmount - 1);
     product->supplier = supermarket.metadata.suppliers[randSupplier];
     product->inDiscount = false;
     product->next = nullptr;
+
+    /**
+     * If areas were created during runtime, pick a random area from (a) runtimeAreas array or (b) sectors
+     */
+    unsigned int areaChance = random::i::inRange(0, 100);
+    if (supermarket.metadata.runtimeAreasAmount > 0 && areaChance < 50) {
+        unsigned int randArea = random::i::inRange(0, supermarket.metadata.runtimeAreasAmount);
+        product->area = supermarket.metadata.runtimeAreas[randArea];
+    } else {
+        unsigned int randSector = random::i::inRange(0, supermarket.sectorsAmount);;
+        auto *sector = supermarket.sectors;
+        while (randSector != 0) {
+            sector = sector->next;
+            randSector--;
+        }
+        product->area = sector->area;
+    }
+
     return product;
 }
 

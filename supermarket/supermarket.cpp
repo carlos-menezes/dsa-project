@@ -12,7 +12,6 @@ namespace supermarket {
 
     Supermarket supermarket::create() {
         Supermarket supermarket{};
-        supermarket.iterations = 0;
 
         /**
          * Load data from each of the files in the `files` directory into the supermarket.
@@ -97,8 +96,7 @@ namespace supermarket {
             Product *temp = product->next;
             Sector *sector = supermarket.sectors;
             while (sector != nullptr) {
-                if (sector->productsAmount == sector->capacity) sector = sector->next;
-                else if (sector->area != product->area) sector = sector->next;
+                if (sector->area != product->area || sector->productsAmount == sector->capacity) sector = sector->next;
                 else {
                     char buffer[1024];
                     snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | SECTOR: %c | PRICE: %.0fEUR",
@@ -132,6 +130,9 @@ namespace supermarket {
                         }
                         product = product->next;
                     }
+                    io::output::info("Ended %d%% discount for sector `%c` (%s)", sector->discountValue, sector->id,
+                                     sector->area.c_str());
+                    sector->discountValue = 0;
                 }
             }
             sector = sector->next;
@@ -198,8 +199,8 @@ namespace supermarket {
             sector = sector->next;
         }
     }
-    
-    bool areaExists(Supermarket &supermarket, const std::string &area) {
+
+    bool isAreaInSectors(Supermarket &supermarket, const std::string &area) {
         bool found = false;
         Sector *sector = supermarket.sectors;
         while (sector != nullptr) {
@@ -367,19 +368,25 @@ namespace supermarket {
         /**
          * Lastly, load sales
          */
-        /*std::string salesInfo;
+        std::string salesInfo;
         std::getline(fileBuffer, salesInfo);
         auto *salesData = tokenizer::split(salesInfo, '|');
         for (int i = 0; i < tokenizer::MAX_ITEMS; ++i) {
             if (salesData[i].length() == 0) break;
             auto *saleInfo = tokenizer::split(salesData[i], ';');
-            int sectorId = saleInfo->at(0) - 65;
-            Sector &sector = supermarket.sectors[sectorId];
-            sector.sales[sector.salesAmount] = sale::createFromString(saleInfo);
-            sector.salesAmount++;
+            char sectorId = saleInfo->at(0);
+
+            Sector *sector = supermarket.sectors;
+            while (sector->id != sectorId) {
+                sector = sector->next;
+            }
+
+            Sale *sale = sale::createFromString(saleInfo);
+            binary_tree::insert(sector->sales, sale);
+            sector->salesAmount++;
             delete[] saleInfo;
         }
-        delete[] salesData;*/
+        delete[] salesData;
 
         return supermarket;
     }

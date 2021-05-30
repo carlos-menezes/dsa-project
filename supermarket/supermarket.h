@@ -19,15 +19,11 @@ struct Supermarket {
     Product* storage;
     unsigned int storageAmount;
 
-    unsigned int iterations;
-
     Metadata metadata;
 };
 
 namespace supermarket {
     const unsigned int MAX_STOCK_PER_ITER = 10;
-    const unsigned int MAX_STORAGE = 1024;
-    const unsigned int MAX_SALES = 1024;
 
     /**
      * Initialize a supermarket.
@@ -52,15 +48,15 @@ namespace supermarket {
     void sellProducts(Supermarket &supermarket);
     void restockStorage(Supermarket &supermarket);
     void restockSectors(Supermarket& supermarket);
-    void addToStorage(Supermarket& supermarket, Product& product);
-    void increaseIterations(Supermarket& supermarket);
     void verifyDiscounts(Supermarket& supermarket);
     void removeProducts(Supermarket& supermarket, const std::string& productName);
     void updateProductsPrice(Supermarket& supermarket, const std::string& productName, double price);
     void printData(Supermarket& supermarket);
-    void startDiscount(Supermarket& supermarket, const std::string& area, unsigned int discount, unsigned int duration);
-    bool areaExists(Supermarket& supermarket, const std::string& area);
-    bool isValidOwner(Supermarket& supermarket, const std::string& owner);
+    void startDiscount(Supermarket &supermarket, const std::string &area, unsigned int discount, unsigned int duration);
+
+    bool isAreaInSectors(Supermarket &supermarket, const std::string &area);
+
+    bool isValidOwner(Supermarket &supermarket, const std::string &owner);
     std::string saveState(Supermarket& supermarket);
     Supermarket loadState(const std::string& path);
 }

@@ -7,13 +7,16 @@ struct Supermarket;
 
 struct Metadata {
     unsigned int areasAmount;
-    std::string* areas;
+    std::string *areas;
 
     unsigned int namesAmount;
-    std::string* names;
+    std::string *names;
 
     unsigned int suppliersAmount;
-    std::string* suppliers;
+    std::string *suppliers;
+
+    unsigned int runtimeAreasAmount;
+    std::string *runtimeAreas;
 };
 
 namespace metadata {
@@ -40,19 +43,11 @@ namespace metadata {
     bool isValidProduct(Supermarket& supermarket, const std::string &entry);
 
     /**
-     * Checks whether an area name is valid (i.e. is included in `areas.txt`)
-     * @param supermarket
-     * @param entry
-     * @return
-     */
-    bool isValidArea(Supermarket& supermarket, const std::string &area);
-
-    /**
      * Adds an area to the supermarket's metadata struct but not to the `areas.txt` file
      * @param supermarket
      * @param area
      */
-    void addArea(Supermarket& supermarket, const std::string& area);
+    void addRuntimeArea(Supermarket &supermarket, const std::string &area);
 }
 
 #endif //SUPER_EDA_METADATA_H
