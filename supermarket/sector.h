@@ -9,16 +9,10 @@ struct Sector {
     unsigned int capacity;
     std::string owner;
     std::string area;
-
     Product *products;
-    unsigned int productsAmount;
-
     Sale *sales;
-    unsigned int salesAmount;
-
     unsigned int discountDuration;
     unsigned int discountValue;
-
     Sector *next;
 };
 

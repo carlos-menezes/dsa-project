@@ -30,4 +30,14 @@ namespace binary_tree {
         write(tree->left, out);
         write(tree->right, out);
     }
+
+    unsigned int count(Sale *&tree) {
+        unsigned int c = 1;
+        if (tree == nullptr) return 0;
+        else {
+            c += count(tree->left);
+            c += count(tree->right);
+            return c;
+        }
+    }
 }

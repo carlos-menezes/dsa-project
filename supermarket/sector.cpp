@@ -19,7 +19,6 @@ Sector *sector::create(Supermarket &supermarket) {
     sectorID++;
     sector->products = nullptr;
     sector->sales = nullptr;
-    sector->salesAmount = 0;
     sector->discountDuration = 0;
     sector->discountValue = 0;
 
@@ -49,7 +48,6 @@ Sector* sector::createFromString(std::string *str) {
     sector->discountDuration = std::stoi(str[6]);
     sector->products = nullptr;
     sector->sales = nullptr;
-    sector->salesAmount = 0;
     sector->next = nullptr;
     return sector;
 }

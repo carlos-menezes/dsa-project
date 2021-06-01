@@ -62,7 +62,6 @@ namespace supermarket {
                     binary_tree::insert(sector->sales, sale);
                     sale::printData(sale);
                     queue::remove(sector->products, product);
-                    sector->salesAmount++;
                     product = temp;
                 }
             }
@@ -380,7 +379,6 @@ namespace supermarket {
 
             Sale *sale = sale::createFromString(saleInfo);
             binary_tree::insert(sector->sales, sale);
-            sector->salesAmount++;
             delete[] saleInfo;
         }
         delete[] salesData;

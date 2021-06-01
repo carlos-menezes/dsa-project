@@ -168,7 +168,7 @@ namespace navigation {
                             Sector *sector = supermarket.sectors;
                             while (sector != nullptr) {
                                 if (sector->owner == owner) {
-                                    count += sector->salesAmount;
+                                    count += binary_tree::count(sector->sales);
                                     binary_tree::traverse(sector->sales);
                                 }
                                 sector = sector->next;
