@@ -151,7 +151,9 @@ namespace navigation {
                     [&supermarket] {
                         std::string area;
                         io::input::getString(area, "Name > ");
-                        if (supermarket::isAreaInSectors(supermarket, area)) io::output::error("Area already exists");
+                        if (supermarket::isAreaInSectors(supermarket, area) ||
+                            metadata::isAreaInRuntime(supermarket, area))
+                            io::output::error("Area already exists");
                         else metadata::addRuntimeArea(supermarket, area);
                     }
             };
@@ -162,7 +164,7 @@ namespace navigation {
                     [&supermarket] {
                         std::string owner;
                         io::input::getString(owner, "Owner > ");
-                        int count = 0;
+                        unsigned int count = 0;
                         if (!supermarket::isValidOwner(supermarket, owner)) io::output::error("Owner not found");
                         else {
                             Sector *sector = supermarket.sectors;
@@ -176,7 +178,6 @@ namespace navigation {
                             if (count == 0) io::output::info("Owner `%s` hasn't made any sales", owner.c_str());
                             else io::output::info("Owner `%s` has made %d sales", owner.c_str(), count);
                         }
-
                     }
             };
             navigation::addItem(navigation, showSales);

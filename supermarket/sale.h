@@ -13,12 +13,8 @@ struct Sale {
 };
 
 namespace sale {
-    const unsigned int MAX_SALES = 1024;
-
     Sale *create(Sector *&sector, Product *&product);
-
     Sale * createFromString(std::string *str);
-
     void printData(Sale *&sale);
 }
 

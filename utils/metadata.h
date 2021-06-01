@@ -8,13 +8,10 @@ struct Supermarket;
 struct Metadata {
     unsigned int areasAmount;
     std::string *areas;
-
     unsigned int namesAmount;
     std::string *names;
-
     unsigned int suppliersAmount;
     std::string *suppliers;
-
     unsigned int runtimeAreasAmount;
     std::string *runtimeAreas;
 };
@@ -40,7 +37,7 @@ namespace metadata {
      * @param entry
      * @return
      */
-    bool isValidProduct(Supermarket& supermarket, const std::string &entry);
+    bool isValidProduct(Supermarket &supermarket, const std::string &entry);
 
     /**
      * Adds an area to the supermarket's metadata struct but not to the `areas.txt` file
@@ -48,6 +45,8 @@ namespace metadata {
      * @param area
      */
     void addRuntimeArea(Supermarket &supermarket, const std::string &area);
+
+    bool isAreaInRuntime(Supermarket &supermarket, const std::string &area);
 }
 
 #endif //SUPER_EDA_METADATA_H

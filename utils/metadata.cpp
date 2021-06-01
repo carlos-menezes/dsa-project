@@ -47,5 +47,17 @@ namespace metadata {
         metadata.runtimeAreasAmount++;
         io::output::info("Created new area `%s`", area.c_str());
     }
+
+    bool isAreaInRuntime(Supermarket &supermarket, const std::string &area) {
+        bool found = false;
+        for (int i = 0; i < supermarket.metadata.runtimeAreasAmount; ++i) {
+            auto &_area = supermarket.metadata.runtimeAreas[i];
+            if (_area == area) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
 }
 

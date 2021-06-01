@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include "binary_tree.h"
 #include "../supermarket/sale.h"
 
