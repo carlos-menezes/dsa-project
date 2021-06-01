@@ -6,6 +6,8 @@
 namespace linked_list {
     namespace sectors {
         void insert(Sector *&list, Sector *&data);
+
+        int length(Sector *&list);
     }
 }
 

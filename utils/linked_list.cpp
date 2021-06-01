@@ -16,5 +16,13 @@ namespace linked_list {
                 sectorCopy->next = nullptr;
             }
         }
+
+        int length(Sector *&list) {
+            int count = 0;
+            for (Sector *sector = list; sector != nullptr; sector = sector->next) {
+                count++;
+            }
+            return count;
+        }
     }
 }

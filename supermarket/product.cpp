@@ -1,6 +1,7 @@
 #include "supermarket.h"
 #include "../utils/random.h"
 #include "../utils/io.h"
+#include "../utils/linked_list.h"
 
 Product *product::create(Supermarket &supermarket) {
     auto *product = new Product;
@@ -24,7 +25,7 @@ Product *product::create(Supermarket &supermarket) {
         unsigned int randArea = random::i::inRange(0, supermarket.metadata.runtimeAreasAmount);
         product->area = supermarket.metadata.runtimeAreas[randArea];
     } else {
-        unsigned int randSector = random::i::inRange(0, supermarket.sectorsAmount);;
+        unsigned int randSector = random::i::inRange(0, linked_list::sectors::length(supermarket.sectors));
         auto *sector = supermarket.sectors;
         while (randSector != 0) {
             sector = sector->next;

@@ -23,7 +23,6 @@ namespace supermarket {
          * Initialize a random amount of sectors, each empty.
          */
         unsigned int numSectors = random::i::inRange(8, 12);
-        supermarket.sectorsAmount = numSectors;
         supermarket.sectors = nullptr;
         io::output::info("Initializing sectors");
         for (int i = 0; i < numSectors; ++i) {
@@ -189,7 +188,8 @@ namespace supermarket {
     void printData(Supermarket &supermarket) {
         io::output::divider();
         char headline[1024];
-        snprintf(headline, sizeof headline, "SUPER EDA | SECTORS: %d | STORAGE STOCK: %d", supermarket.sectorsAmount,
+        snprintf(headline, sizeof headline, "SUPER EDA | SECTORS: %d | STORAGE STOCK: %d",
+                 linked_list::sectors::length(supermarket.sectors),
                  supermarket.storageAmount);
         io::output::custom(io::BOLDCYAN, true, headline);
         io::output::divider();
@@ -257,7 +257,7 @@ namespace supermarket {
         std::ofstream fileBuffer(fileName);
 
         char *supermarketInfo = new char[8];
-        sprintf(supermarketInfo, "%d|\n", supermarket.sectorsAmount);
+        sprintf(supermarketInfo, "%d|\n", linked_list::sectors::length(supermarket.sectors));
         fileBuffer.write(supermarketInfo, strlen(supermarketInfo));
         delete[] supermarketInfo;
 
@@ -319,7 +319,7 @@ namespace supermarket {
         std::string supermarketInfo;
         std::getline(fileBuffer, supermarketInfo);
         auto *supermarketData = tokenizer::split(supermarketInfo, ';');
-        supermarket.sectorsAmount = std::stoi(supermarketData[0]);
+        int numSectors = std::stoi(supermarketData[0]);
         supermarket.sectors = nullptr;
         delete[] supermarketData;
 
@@ -343,7 +343,7 @@ namespace supermarket {
          * Load sectors
          */
         std::string sectorInfo;
-        for (int i = 0; i < supermarket.sectorsAmount; ++i) {
+        for (int i = 0; i < numSectors; ++i) {
             std::getline(fileBuffer, sectorInfo);
             auto *sectorData = tokenizer::split(sectorInfo, '|');
 
@@ -351,7 +351,7 @@ namespace supermarket {
              * Initialize each sector
              */
             auto *metadata = tokenizer::split(sectorData[0], ';');
-            Sector* sector = sector::createFromString(metadata);
+            Sector *sector = sector::createFromString(metadata);
 
             /**
              * Import each product for the sector
