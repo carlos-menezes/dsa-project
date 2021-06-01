@@ -17,8 +17,8 @@ namespace linked_list {
             }
         }
 
-        int length(Sector *&list) {
-            int count = 0;
+        unsigned int length(Sector *&list) {
+            unsigned int count = 0;
             for (Sector *sector = list; sector != nullptr; sector = sector->next) {
                 count++;
             }

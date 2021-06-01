@@ -30,4 +30,12 @@ namespace queue {
             delete element;
         }
     }
+
+    unsigned int length(Product *&queue) {
+        unsigned int count = 0;
+        for (Product *product = queue; product != nullptr; product = product->next) {
+            count++;
+        }
+        return count;
+    }
 }

@@ -43,7 +43,6 @@ namespace supermarket {
                      product->area.c_str(), product->price);
             io::output::custom(io::BOLDMAGENTA, true, "STORAGE ENTRY", buffer);
             queue::enqueue(supermarket.storage, product);
-            supermarket.storageAmount++;
             delete product;
         }
 
@@ -63,7 +62,6 @@ namespace supermarket {
                     binary_tree::insert(sector->sales, sale);
                     sale::printData(sale);
                     queue::remove(sector->products, product);
-                    sector->productsAmount--;
                     sector->salesAmount++;
                     product = temp;
                 }
@@ -81,7 +79,6 @@ namespace supermarket {
             snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | PRICE: %.0fEUR", product->name.c_str(),
                      product->area.c_str(), product->price);
             io::output::custom(io::BOLDMAGENTA, true, "STORAGE RESTOCK", buffer);
-            supermarket.storageAmount++;
             delete product;
         }
         io::output::divider();
@@ -92,25 +89,27 @@ namespace supermarket {
         Product *product = supermarket.storage;
         while (product != nullptr) {
             if (stockedProducts == MAX_STOCK_PER_ITER) break;
-            Product *temp = product->next;
-            Sector *sector = supermarket.sectors;
-            while (sector != nullptr) {
-                if (sector->area != product->area || sector->productsAmount == sector->capacity) sector = sector->next;
-                else {
-                    char buffer[1024];
-                    snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | SECTOR: %c | PRICE: %.0fEUR",
-                             product->name.c_str(), product->area.c_str(), sector->id, product->price);
-                    io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
+            else if (!supermarket::isAreaInSectors(supermarket, product->area)) product = product->next;
+            else {
+                Product *temp = product->next;
+                Sector *sector = supermarket.sectors;
+                while (sector != nullptr) {
+                    if (sector->area != product->area || queue::length(sector->products) == sector->capacity)
+                        sector = sector->next;
+                    else {
+                        char buffer[1024];
+                        snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | SECTOR: %c | PRICE: %.0fEUR",
+                                 product->name.c_str(), product->area.c_str(), sector->id, product->price);
+                        io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
 
-                    queue::enqueue(sector->products, product);
-                    queue::remove(supermarket.storage, product);
-                    sector->productsAmount++;
-                    supermarket.storageAmount--;
-                    stockedProducts++;
-                    break;
+                        queue::enqueue(sector->products, product);
+                        queue::remove(supermarket.storage, product);
+                        stockedProducts++;
+                        break;
+                    }
                 }
+                product = temp;
             }
-            product = temp;
         }
     }
 
@@ -189,8 +188,7 @@ namespace supermarket {
         io::output::divider();
         char headline[1024];
         snprintf(headline, sizeof headline, "SUPER EDA | SECTORS: %d | STORAGE STOCK: %d",
-                 linked_list::sectors::length(supermarket.sectors),
-                 supermarket.storageAmount);
+                 linked_list::sectors::length(supermarket.sectors), queue::length(supermarket.storage));
         io::output::custom(io::BOLDCYAN, true, headline);
         io::output::divider();
         Sector *sector = supermarket.sectors;
@@ -274,7 +272,7 @@ namespace supermarket {
         for (Sector* sector = supermarket.sectors; sector != nullptr ; sector = sector->next) {
             char *sector_info = new char[1024];
             sprintf(sector_info, "%c;%s;%s;%d;%u;%u;%u|", sector->id, sector->owner.c_str(), sector->area.c_str(),
-                    sector->capacity, sector->productsAmount, sector->discountValue, sector->discountDuration);
+                    sector->capacity, queue::length(sector->products), sector->discountValue, sector->discountDuration);
             fileBuffer.write(sector_info, strlen(sector_info));
             delete[] sector_info;
 
@@ -310,7 +308,6 @@ namespace supermarket {
         Supermarket supermarket {};
         supermarket.metadata = metadata::load();
         supermarket.storage = nullptr;
-        supermarket.storageAmount = 0;
 
         /**
          * Load supermarket info, namely:
@@ -335,7 +332,6 @@ namespace supermarket {
             Product* product = product::createFromString(productInfo);
             queue::enqueue(supermarket.storage, product);
             delete[] productInfo;
-            supermarket.storageAmount++;
         }
         delete[] storageData;
 
@@ -356,9 +352,10 @@ namespace supermarket {
             /**
              * Import each product for the sector
              */
-            for (int j = 1; j < sector->productsAmount + 1; ++j) {
+            int productsAmount = std::stoi(metadata[4]);
+            for (int j = 1; j < productsAmount + 1; ++j) {
                 auto *productInfo = tokenizer::split(sectorData[j], ';');
-                Product* product = product::createFromString(productInfo);
+                Product *product = product::createFromString(productInfo);
                 queue::enqueue(sector->products, product);
             }
             linked_list::sectors::insert(supermarket.sectors, sector);

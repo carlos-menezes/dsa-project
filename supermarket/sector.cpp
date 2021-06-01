@@ -2,6 +2,7 @@
 #include "../utils/random.h"
 #include "sector.h"
 #include "../utils/io.h"
+#include "../utils/queue.h"
 
 
 Sector *sector::create(Supermarket &supermarket) {
@@ -17,7 +18,6 @@ Sector *sector::create(Supermarket &supermarket) {
     sector->owner = sectorID;
     sectorID++;
     sector->products = nullptr;
-    sector->productsAmount = 0;
     sector->sales = nullptr;
     sector->salesAmount = 0;
     sector->discountDuration = 0;
@@ -30,7 +30,7 @@ Sector *sector::create(Supermarket &supermarket) {
 void sector::printData(Sector *sector) {
     char headline[1024];
     snprintf(headline, sizeof headline, "SECTOR: %c | AREA: %s | OWNER: %s | CAPACITY: %d | STOCK: %d", sector->id,
-             sector->area.c_str(), sector->owner.c_str(), sector->capacity, sector->productsAmount);
+             sector->area.c_str(), sector->owner.c_str(), sector->capacity, queue::length(sector->products));
     io::output::custom(io::BOLDGREEN, true, headline);
     Product *product = sector->products;
     while (product != nullptr) {
@@ -45,7 +45,6 @@ Sector* sector::createFromString(std::string *str) {
     sector->owner = str[1];
     sector->area = str[2];
     sector->capacity = std::stoi(str[3]);
-    sector->productsAmount = std::stoi(str[4]);
     sector->discountValue = std::stoi(str[5]);
     sector->discountDuration = std::stoi(str[6]);
     sector->products = nullptr;

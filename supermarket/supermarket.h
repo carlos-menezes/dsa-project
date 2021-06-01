@@ -14,11 +14,7 @@ struct Supermarket;
 
 struct Supermarket {
     Sector* sectors;
-    unsigned int sectorsAmount;
-
     Product* storage;
-    unsigned int storageAmount;
-
     Metadata metadata;
 };
 

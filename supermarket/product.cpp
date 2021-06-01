@@ -21,7 +21,7 @@ Product *product::create(Supermarket &supermarket) {
      * If areas were created during runtime, pick a random area from (a) runtimeAreas array or (b) sectors
      */
     unsigned int areaChance = random::i::inRange(0, 100);
-    if (supermarket.metadata.runtimeAreasAmount > 0 && areaChance < 50) {
+    if (supermarket.metadata.runtimeAreasAmount > 0 && areaChance < 30) {
         unsigned int randArea = random::i::inRange(0, supermarket.metadata.runtimeAreasAmount);
         product->area = supermarket.metadata.runtimeAreas[randArea];
     } else {
