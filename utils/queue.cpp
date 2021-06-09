@@ -1,17 +1,16 @@
 #include "queue.h"
 
 namespace queue {
-    void enqueue(Product *&queue, Product *&data) {
-        auto *productCopy = new Product(*data);
-        productCopy->next = nullptr;
+    void enqueue(Product *&queue, Product *&element) {
+        element->next = nullptr;
         if (queue == nullptr) {
-            queue = productCopy;
+            queue = element;
         } else {
             Product *it = queue;
             while (it->next != nullptr) {
                 it = it->next;
             }
-            it->next = productCopy;
+            it->next = element;
         }
     }
 

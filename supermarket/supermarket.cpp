@@ -29,7 +29,6 @@ namespace supermarket {
         for (int i = 0; i < numSectors; ++i) {
             Sector *sector = sector::create(supermarket);
             linked_list::sectors::insert(supermarket.sectors, sector);
-            delete sector;
         }
 
         /**
@@ -44,7 +43,6 @@ namespace supermarket {
                      product->area.c_str(), product->price);
             io::output::custom(io::BOLDMAGENTA, true, "STORAGE ENTRY", buffer);
             queue::enqueue(supermarket.storage, product);
-            delete product;
         }
 
         return supermarket;
@@ -79,7 +77,6 @@ namespace supermarket {
             snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | PRICE: %.0fEUR", product->name.c_str(),
                      product->area.c_str(), product->price);
             io::output::custom(io::BOLDMAGENTA, true, "STORAGE RESTOCK", buffer);
-            delete product;
         }
         io::output::divider();
     }
@@ -101,9 +98,10 @@ namespace supermarket {
                         snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | SECTOR: %c | PRICE: %.0fEUR",
                                  product->name.c_str(), product->area.c_str(), sector->id, product->price);
                         io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
-
+                        if (product == supermarket.storage) {
+                            supermarket.storage = temp;
+                        }
                         queue::enqueue(sector->products, product);
-                        queue::remove(supermarket.storage, product);
                         stockedProducts++;
                         break;
                     }
@@ -186,11 +184,11 @@ namespace supermarket {
     
     void printData(Supermarket &supermarket) {
         io::output::divider();
-        char headline[1024];
+        /*char headline[1024];
         snprintf(headline, sizeof headline, "SUPER EDA | SECTORS: %d | STORAGE STOCK: %d",
                  linked_list::sectors::length(supermarket.sectors), queue::length(supermarket.storage));
         io::output::custom(io::BOLDCYAN, true, headline);
-        io::output::divider();
+        io::output::divider();*/
         Sector *sector = supermarket.sectors;
         while (sector != nullptr) {
             sector::printData(sector);

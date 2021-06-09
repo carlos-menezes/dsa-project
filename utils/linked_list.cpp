@@ -3,17 +3,16 @@
 namespace linked_list {
     namespace sectors {
         void insert(Sector *&list, Sector *&data) {
-            auto *sectorCopy = new Sector(*data);
             if (list == nullptr) {
-                sectorCopy->next = list;
-                list = sectorCopy;
+                data->next = list;
+                list = data;
             } else {
                 Sector *aux = list;
                 while (aux != nullptr && aux->next != nullptr) {
                     aux = aux->next;
                 }
-                aux->next = sectorCopy;
-                sectorCopy->next = nullptr;
+                aux->next = data;
+                data->next = nullptr;
             }
         }
 
