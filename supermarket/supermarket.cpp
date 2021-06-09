@@ -1,5 +1,6 @@
 #include <chrono>
 #include <fstream>
+#include <cstring>
 #include "supermarket.h"
 #include "../utils/random.h"
 #include "../utils/io.h"
@@ -10,7 +11,7 @@
 
 namespace supermarket {
 
-    Supermarket supermarket::create() {
+    Supermarket create() {
         Supermarket supermarket{};
 
         /**
@@ -22,7 +23,7 @@ namespace supermarket {
         /**
          * Initialize a random amount of sectors, each empty.
          */
-        unsigned int numSectors = random::i::inRange(8, 12);
+        unsigned int numSectors = randgen::i::inRange(8, 12);
         supermarket.sectors = nullptr;
         io::output::info("Initializing sectors");
         for (int i = 0; i < numSectors; ++i) {
@@ -54,7 +55,7 @@ namespace supermarket {
         while (sector != nullptr) {
             Product *product = sector->products;
             while (product != nullptr) {
-                unsigned int chance = random::i::inRange(1, 4);
+                unsigned int chance = randgen::i::inRange(1, 4);
                 if (chance > 1) product = product->next;
                 else {
                     Product *temp = product->next;
@@ -88,7 +89,7 @@ namespace supermarket {
         Product *product = supermarket.storage;
         while (product != nullptr) {
             if (stockedProducts == MAX_STOCK_PER_ITER) break;
-            else if (!supermarket::isAreaInSectors(supermarket, product->area)) product = product->next;
+            else if (!isAreaInSectors(supermarket, product->area)) product = product->next;
             else {
                 Product *temp = product->next;
                 Sector *sector = supermarket.sectors;
@@ -388,11 +389,11 @@ namespace supermarket {
 
 
     void process(Supermarket &supermarket) {
-        supermarket::sellProducts(supermarket);
-        supermarket::restockStorage(supermarket);
-        supermarket::restockSectors(supermarket);
-        supermarket::verifyDiscounts(supermarket);
-        supermarket::printData(supermarket);
+        sellProducts(supermarket);
+        restockStorage(supermarket);
+        restockSectors(supermarket);
+        verifyDiscounts(supermarket);
+        printData(supermarket);
     }
 }
 

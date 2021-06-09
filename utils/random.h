@@ -3,7 +3,7 @@
 
 #include <random>
 
-namespace random::i {
+namespace randgen::i {
     unsigned int inRangeEven(unsigned int min, unsigned int max);
     unsigned int inRange(unsigned int min, unsigned int max);
 }

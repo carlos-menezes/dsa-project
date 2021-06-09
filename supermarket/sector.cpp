@@ -9,8 +9,8 @@ Sector *sector::create(Supermarket &supermarket) {
     auto *sector = new Sector;
     static char sectorID = 65;
     sector->id = sectorID;
-    sector->capacity = random::i::inRange(5, 11);
-    sector->area = supermarket.metadata.areas[random::i::inRange(0, 11)];
+    sector->capacity = randgen::i::inRange(5, 11);
+    sector->area = supermarket.metadata.areas[randgen::i::inRange(0, 11)];
 
     /*char buffer[1024];
     snprintf(buffer, sizeof buffer, "Owner for sector %c > ", sector->id);
