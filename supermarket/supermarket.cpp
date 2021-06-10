@@ -84,6 +84,7 @@ namespace supermarket {
     void restockSectors(Supermarket &supermarket) {
         unsigned int stockedProducts = 0;
         Product *product = supermarket.storage;
+        Product *previous = nullptr;
         while (product != nullptr) {
             if (stockedProducts == MAX_STOCK_PER_ITER) break;
             else if (!isAreaInSectors(supermarket, product->area)) product = product->next;
@@ -98,9 +99,18 @@ namespace supermarket {
                         snprintf(buffer, sizeof buffer, "PRODUCT: %s | AREA: %s | SECTOR: %c | PRICE: %.0fEUR",
                                  product->name.c_str(), product->area.c_str(), sector->id, product->price);
                         io::output::custom(io::BOLDYELLOW, true, "STOCK", buffer);
+
                         if (product == supermarket.storage) {
-                            supermarket.storage = temp;
+                            supermarket.storage = product->next;
+                        } else {
+                            Product *it = supermarket.storage;
+                            while (it->next != product) {
+                                it = it->next;
+                            }
+                            previous = it;
+                            previous->next = product->next;
                         }
+
                         queue::enqueue(sector->products, product);
                         stockedProducts++;
                         break;
@@ -134,7 +144,7 @@ namespace supermarket {
             sector = sector->next;
         }
     }
-    
+
     void updateProductsPrice(Supermarket &supermarket, const std::string &productName, double price) {
         unsigned int count = 0;
         Product *product = supermarket.storage;
@@ -147,7 +157,7 @@ namespace supermarket {
         }
         io::output::info("%d products had their price updated", count);
     }
-    
+
     void removeProducts(Supermarket &supermarket, const std::string &productName) {
         int count = 0;
         // Remove products from storage
@@ -181,14 +191,14 @@ namespace supermarket {
 
         io::output::info("Removed %d instances of product `%s`", count, productName.c_str());
     }
-    
+
     void printData(Supermarket &supermarket) {
         io::output::divider();
-        /*char headline[1024];
+        char headline[1024];
         snprintf(headline, sizeof headline, "SUPER EDA | SECTORS: %d | STORAGE STOCK: %d",
                  linked_list::sectors::length(supermarket.sectors), queue::length(supermarket.storage));
         io::output::custom(io::BOLDCYAN, true, headline);
-        io::output::divider();*/
+        io::output::divider();
         Sector *sector = supermarket.sectors;
         while (sector != nullptr) {
             sector::printData(sector);
@@ -253,11 +263,20 @@ namespace supermarket {
         std::ofstream fileBuffer(fileName);
 
         char *supermarketInfo = new char[8];
-        sprintf(supermarketInfo, "%d|\n", linked_list::sectors::length(supermarket.sectors));
+        sprintf(supermarketInfo, "%d;", linked_list::sectors::length(supermarket.sectors));
         fileBuffer.write(supermarketInfo, strlen(supermarketInfo));
         delete[] supermarketInfo;
 
-        for (Product* product = supermarket.storage; product != nullptr ; product = product->next){
+        for (int i = 0; i < supermarket.metadata.runtimeAreasAmount; ++i) {
+            char *areaInfo = new char[30];
+            sprintf(areaInfo, "%s;", supermarket.metadata.runtimeAreas[i].c_str());
+            fileBuffer.write(areaInfo, strlen(areaInfo));
+            delete[] areaInfo;
+        }
+
+        fileBuffer.write(lineBreak, strlen(lineBreak));
+
+        for (Product *product = supermarket.storage; product != nullptr; product = product->next) {
             char *product_info = new char[1024];
             sprintf(product_info, "%s;%s;%s;%.0f;%d|", product->name.c_str(), product->supplier.c_str(),
                     product->area.c_str(), product->price, product->inDiscount);
@@ -316,6 +335,16 @@ namespace supermarket {
         auto *supermarketData = tokenizer::split(supermarketInfo, ';');
         int numSectors = std::stoi(supermarketData[0]);
         supermarket.sectors = nullptr;
+
+        /**
+         * Load runtime areas
+         */
+        for (int i = 1; i < tokenizer::MAX_ITEMS; ++i) {
+            if (supermarketData[i].empty()) break;
+            supermarket.metadata.runtimeAreas[i - 1] = supermarketData[i];
+            supermarket.metadata.runtimeAreasAmount++;
+        }
+
         delete[] supermarketData;
 
         /**
