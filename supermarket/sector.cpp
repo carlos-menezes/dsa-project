@@ -11,17 +11,14 @@ Sector *sector::create(Supermarket &supermarket) {
     sector->id = sectorID;
     sector->capacity = randgen::i::inRange(5, 11);
     sector->area = supermarket.metadata.areas[randgen::i::inRange(0, 11)];
-
-    /*char buffer[1024];
+    char buffer[1024];
     snprintf(buffer, sizeof buffer, "Owner for sector %c > ", sector->id);
-    io::input::getString(sector->owner, buffer);*/
-    sector->owner = sectorID;
+    io::input::getString(sector->owner, buffer);
     sectorID++;
     sector->products = nullptr;
     sector->sales = nullptr;
     sector->discountDuration = 0;
     sector->discountValue = 0;
-
     sector->next = nullptr;
     return sector;
 }
